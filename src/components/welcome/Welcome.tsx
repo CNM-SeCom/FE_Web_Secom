@@ -20,14 +20,14 @@ const Welcome = () => {
                     <span>Password</span>
                     <input type="password" />
                 </label>
-                <p className="forgot-pass">Forgot password?</p>
+                <p className="forgot-pass">Quên mật khẩu?</p>
                 <button type="button" className="submit">Đăng nhập</button>
             
             </div>
             <div className="sub-cont">
                 <div className="img">
                     <div className="img__text m--up">
-                        <h3>Bạn chua có tài khoản? Vui lòng Đăng ký!</h3>
+                        <h3>Bạn chưa có tài khoản? Vui lòng Đăng ký!</h3>
                     </div>
                     <div className="img__text m--in">
                         <h3>Nếu bạn đã có tài khoản, hãy đăng nhập.</h3>
