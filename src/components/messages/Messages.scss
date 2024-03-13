@@ -1,4 +1,61 @@
 .messages-wrapper {
     width: 50%;
-    background-color: #ccc;
+    background-color: #fff;;
+
+    .messages-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+
+        .mh-left {
+            width: 16%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+            }
+        }
+
+        .mh-right {
+            width: 16%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .avatar-wrapper {
+                display: flex;
+
+                img {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    margin-left: -14px;
+                }
+
+                p {
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    margin-left: -14px;
+                    background-color: #ccc;
+                    color: #fff;
+                    text-align: center;
+                    font-size: 14px;
+                    padding: 7px 0;
+                }
+            }
+
+            .icon-setting {
+               border-radius: 50%; 
+
+               &:hover {
+                background-color: #ccc;
+               }
+            }
+        }
+    }
 }

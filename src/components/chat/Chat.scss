@@ -6,12 +6,17 @@
     .conversations-wrapper {
         width: 22%;
         background-color: #ebedf0;
-        padding: 20px;
+        padding: 20px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         .conversations-header {
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 20px;
 
             button {
                 width: 50%;
@@ -20,10 +25,12 @@
                 border-radius: 5px;
                 border: none;
                 font-weight: 700;
+                padding: 0px 10px;
             }
         }
     
         .search-wrapper {
+            width: 88%;
             border: 1px solid #ccc;
             border-radius: 5px;
             position: relative;
@@ -43,6 +50,10 @@
                 color: #ccc;
                 cursor: pointer;
             }
+        }
+
+        hr {
+            width: 100%;
         }
     }
 }

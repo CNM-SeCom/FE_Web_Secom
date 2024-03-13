@@ -17,12 +17,11 @@ const Welcome = () => {
                     <input type="text" />
                 </label>
                 <label>
-                    <span>Password</span>
+                    <span>Mật khẩu</span>
                     <input type="password" />
                 </label>
                 <p className="forgot-pass">Quên mật khẩu?</p>
                 <button type="button" className="submit">Đăng nhập</button>
-            
             </div>
             <div className="sub-cont">
                 <div className="img">
