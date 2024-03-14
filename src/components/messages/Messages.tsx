@@ -2,6 +2,7 @@ import './Messages.scss'
 import avatar from '../../assets/avatar.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons'
+import Message from '../message/Message'
 
 const Messages = () => {
   return (
@@ -23,6 +24,14 @@ const Messages = () => {
         </div>
       </div>
       <hr />
+      <div className="chat-content-wrapper">
+        <Message />
+      </div>
+      <hr />
+      <div className="input-message-wrapper">
+        <input type="text" />
+        <button>Gửi</button>
+      </div>
     </div>
   )
 }
