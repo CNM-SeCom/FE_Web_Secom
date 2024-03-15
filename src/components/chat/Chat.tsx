@@ -4,11 +4,23 @@ import Navigation from '../navigation/Navigation'
 import './Chat.scss'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Conversation from '../conversation/Conversation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useAppSelector } from '../../redux/Store'
+import { useNavigate } from 'react-router-dom'
 
 const Chat = () => {
 
   const [active, setActive] = useState<number>(0)
+
+  const isLogin:boolean = useAppSelector((state) => state.login.isLogin)
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+      if(!isLogin) {
+        navigate('/welcome')
+      }
+  }, [])
 
   return (
     <div className='chat-wrapper'>

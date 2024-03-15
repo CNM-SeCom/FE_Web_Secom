@@ -255,7 +255,6 @@ input {
 }
 
 .forgot-pass {
-    margin-top: 15px;
     text-align: center;
     font-size: 12px;
     color: #cfcfcf;
@@ -305,4 +304,18 @@ input {
 .cont.s--signup .sign-up {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+}
+
+.wrong-info-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.wrong-info-txt {
+    font-size: 12px;
+    color: red;
+    margin-right: 20px;
+    opacity: 0.8;
 }

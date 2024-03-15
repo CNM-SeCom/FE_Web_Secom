@@ -3,26 +3,32 @@ import './Navigation.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' 
 import { useState } from 'react'
 
+enum NavItem {
+  HOME = 0,
+  CHAT = 1,
+  PROFILE = 2,
+  SETTING = 3,
+}
 
 const Navigation = () => {
 
-  const [active, setActive] = useState<number>(0)
+  const [active, setActive] = useState<NavItem>(NavItem.HOME)
 
   return (
     <div className='nav-wrapper'>
-      <div className={`${active == 0 ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(0)}>
+      <div className={`${active == NavItem.HOME ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.HOME)}>
         <FontAwesomeIcon className='nav-icon' icon={faHouse} />
         <p>Trang chủ</p>
       </div>
-      <div className={`${active == 1 ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(1)}>
+      <div className={`${active == NavItem.CHAT ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.CHAT)}>
         <FontAwesomeIcon className='nav-icon' icon={faComment} />
         <p>Tin nhắn</p>
       </div>
-      <div className={`${active == 2 ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(2)}>
+      <div className={`${active == NavItem.PROFILE ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.PROFILE)}>
         <FontAwesomeIcon className='nav-icon' icon={faUser} />
         <p>Trang cá nhân</p>
       </div>
-      <div className={`${active == 3 ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(3)}>
+      <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.SETTING)}>
         <FontAwesomeIcon className='nav-icon' icon={faGear} />  
         <p>Cài đặt</p>
       </div>    
