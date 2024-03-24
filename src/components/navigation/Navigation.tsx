@@ -1,18 +1,30 @@
-import { faComment, faGear, faHouse, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faComment, faGear, faHouse, faUser } from '@fortawesome/free-solid-svg-icons'
 import './Navigation.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' 
 import { useState } from 'react'
+import { useAppDispatch } from '../../redux/Store'
+import { useNavigate } from 'react-router-dom'
+import { changeLoginState } from '../../redux/LoginSlice'
 
 enum NavItem {
   HOME = 0,
   CHAT = 1,
   PROFILE = 2,
   SETTING = 3,
+  LOG_OUT = 4,
 }
 
 const Navigation = () => {
 
   const [active, setActive] = useState<NavItem>(NavItem.HOME)
+
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    dispatch(changeLoginState(false))
+    navigate('/welcome')
+  }
 
   return (
     <div className='nav-wrapper'>
@@ -31,6 +43,10 @@ const Navigation = () => {
       <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.SETTING)}>
         <FontAwesomeIcon className='nav-icon' icon={faGear} />  
         <p>Cài đặt</p>
+      </div>    
+      <div className='nav-item' onClick={() => handleLogout()}>
+        <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
+        <p>Đăng xuất</p>
       </div>    
     </div>
   )

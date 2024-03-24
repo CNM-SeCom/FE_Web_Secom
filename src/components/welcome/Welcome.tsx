@@ -3,21 +3,7 @@ import './Welcome.scss'
 import { changeLoginState } from '../../redux/LoginSlice';
 import { useAppDispatch } from '../../redux/Store';
 import { useNavigate } from 'react-router-dom';
-
-const account = [
-    {
-        phone: '0916420671',
-        password: '123456',
-    },
-    {
-        phone: '0911111111',
-        password: '1234567',
-    },
-    {
-        phone: '0912456789',
-        password: '12345678',
-    },
-]
+import axios from 'axios';
 
 enum Display {
     NONE = 'none',
@@ -25,10 +11,16 @@ enum Display {
 }
 
 const Welcome = () => {
-    const [isSignUp, setIsSignUp] = useState(false);
-    const [phone, setPhone] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [block, setBlock] = useState<Display>(Display.NONE)
+    const [isSignUp, setIsSignUp] = useState<boolean>(false);
+    const [phone1, setPhone1] = useState<string>('0399889699')
+    const [phone2, setPhone2] = useState<string>('')
+    const [password1, setPassword1] = useState<string>('aaaaaaaaA1@')
+    const [password2, setPassword2] = useState<string>('')
+    const [password3, setPassword3] = useState<string>('')
+    const [block1, setBlock1] = useState<Display>(Display.NONE)
+    const [block2, setBlock2] = useState<Display>(Display.NONE)
+    const [gender, setGender] = useState<string>('')
+    const [name, setName] = useState<string>('')
 
     const toggleSignUp = () => {
         setIsSignUp(!isSignUp);
@@ -37,18 +29,45 @@ const Welcome = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
-    const handleLogin = () => {
-        account.some((a) => {
-            if(a.phone === phone && a.password === password) {
-                console.log(111)
-                navigate('/chat')
-                setBlock(Display.NONE)
-                dispatch(changeLoginState(true))
-            }
-            else {
-                setBlock(Display.BLOCK)
-            }
+    const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault()
+
+        await axios.post('http://localhost:3000/login', {
+                phone: phone1,
+                pass: password1,
+            },
+        )
+        .then(() => {
+            dispatch(changeLoginState(true))
+            setBlock1(Display.NONE)
+            navigate('/chat')
         })
+        .catch((error): void => {
+            console.log('Error', error)
+            setBlock1(Display.BLOCK)
+        })
+    }
+
+    const handleSignup = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault()
+
+        if(password2 != password3) {
+            setBlock2(Display.BLOCK)
+        }
+        else {
+            await axios.post('http://localhost:3000/create', {
+                phone: phone2,
+                name: name,
+                gender: gender,
+                pass: password2,
+            })
+            .then(() => {
+                setIsSignUp(false)
+            })
+            .catch((error): void => {
+                console.log('Error: ', error)
+            })
+        }
     }
 
     return (
@@ -57,17 +76,17 @@ const Welcome = () => {
                 <h2>Welcome</h2>
                 <label>
                     <span>Số điện thoại</span>
-                    <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    <input type="text" value={phone1} onChange={(e) => setPhone1(e.target.value)} />
                 </label>
                 <label>
                     <span>Mật khẩu</span>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <input type="password" value={password1} onChange={(e) => setPassword1(e.target.value)} />
                 </label>
                 <div className="wrong-info-wrapper">
-                    <p className='wrong-info-txt' style={{display: `${block}`}}>Vui lòng nhập đúng thông tin!</p>
+                    <p className='wrong-info-txt' style={{display: `${block1}`}}>Vui lòng nhập đúng thông tin!</p>
                     <p className="forgot-pass">Quên mật khẩu?</p>
                 </div>
-                <button type="button" className="submit" onClick={() => handleLogin()}>Đăng nhập</button>
+                <button type="button" className="submit" onClick={(e) => handleLogin(e)}>Đăng nhập</button>
             </div>
             <div className="sub-cont">
                 <div className="img">
@@ -85,18 +104,31 @@ const Welcome = () => {
                 <div className="form sign-up">
                     <h2>Tạo tài khoản mới</h2>
                     <label>
+                        <span>Tên</span>
+                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                    </label>
+                    <label>
                         <span>Số điện thoại</span>
-                        <input type="text" />
+                        <input type="text" value={phone2} onChange={(e) => setPhone2(e.target.value)} />
                     </label>
                     <label>
                         <span>Mật khẩu</span>
-                        <input type="password" />
+                        <input type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} />
                     </label>
                     <label>
                         <span>Nhập lại mật khẩu</span>
-                        <input type="password" />
+                        <input type="password" value={password3} onChange={(e) => setPassword3(e.target.value)}/>
                     </label>
-                    <button type="button" className="submit">Đăng ký</button>
+                    <label>
+                        <span>Giới tính</span>
+                        <select name='gender' onChange={(e) => setGender(e.target.value)}>
+                            <option value="male">Nam</option>
+                            <option value="female">Nữ</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </label>
+                    <p className='wrong-info-txt' style={{display: `${block2}`}}>Xác nhận mật khẩu không đúng!</p>
+                    <button type="button" className="submit" onClick={(e) => handleSignup(e)}>Đăng ký</button>
                 </div>
             </div>
         </div>
