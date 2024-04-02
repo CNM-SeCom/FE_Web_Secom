@@ -1,13 +1,30 @@
 import './Profile.scss'
-import Navigation from '../navigation/Navigation'
 import avatar from '../../assets/person/7.jpeg'
 import pagebackground from '../../assets/3.jpeg'
+import { useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useAppSelector } from '../../redux/Store'
+import { UserInterface } from '../../interface/Interface'
 
 const Profile = () => {
+
+  const navigate = useNavigate()
+  const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
+  const user: UserInterface = useAppSelector((state) => state.user.userInfo)
+  const params = useParams()
+  const { idUser } = params
+
+  console.log(user, idUser)
+
+  useEffect(() => {
+    if(!isLogin) {
+      navigate('/welcome')
+    }
+  }, [])
+
   return (
     <>
       <div className="profile">
-        <Navigation/>
         <div className="profileRight">
           <div className="profileRightTop">
             <div className="profileCover">

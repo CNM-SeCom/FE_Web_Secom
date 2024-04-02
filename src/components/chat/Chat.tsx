@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Messages from '../messages/Messages'
-import Navigation from '../navigation/Navigation'
 import './Chat.scss'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import Conversation from '../conversation/Conversation'
@@ -12,7 +11,7 @@ const Chat = () => {
 
   const [active, setActive] = useState<number>(0)
 
-  const isLogin:boolean = useAppSelector((state) => state.login.isLogin)
+  const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
 
   const navigate = useNavigate()
 
@@ -24,7 +23,7 @@ const Chat = () => {
 
   return (
     <div className='chat-wrapper'>
-      <Navigation />
+      {/* <Navigation /> */}
       <div className="conversations-wrapper">
         <div className="conversations-header">
           <h4>Tin nhắn (3)</h4>

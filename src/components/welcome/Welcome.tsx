@@ -4,6 +4,9 @@ import { changeLoginState } from '../../redux/LoginSlice';
 import { useAppDispatch } from '../../redux/Store';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { setUser } from '../../redux/UserSlice';
+import { setToken } from '../../redux/TokenSlice';
+import { UserInterface } from '../../interface/Interface';
 
 enum Display {
     NONE = 'none',
@@ -12,7 +15,7 @@ enum Display {
 
 const Welcome = () => {
     const [isSignUp, setIsSignUp] = useState<boolean>(false);
-    const [phone1, setPhone1] = useState<string>('0399889699')
+    const [phone1, setPhone1] = useState<string>('0348307336')
     const [phone2, setPhone2] = useState<string>('')
     const [password1, setPassword1] = useState<string>('aaaaaaaaA1@')
     const [password2, setPassword2] = useState<string>('')
@@ -21,6 +24,7 @@ const Welcome = () => {
     const [block2, setBlock2] = useState<Display>(Display.NONE)
     const [gender, setGender] = useState<string>('')
     const [name, setName] = useState<string>('')
+    const [user1, setUser1] = useState<UserInterface>()
 
     const toggleSignUp = () => {
         setIsSignUp(!isSignUp);
@@ -29,23 +33,48 @@ const Welcome = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
+    const updateToken = async (refreshToken: string, idUser: string) => {
+        setTimeout( async () => {
+        await axios.post('http://localhost:3000/updateAccessToken', {
+            refreshToken: refreshToken,
+            idUser: idUser,
+        }, {validateStatus: () => {
+            return true
+        }})
+        .then((res) => {
+            dispatch(setToken(res.data))
+            if(user1 !== null) {
+                updateToken(res.data.refreshToken, idUser)
+            }
+        })
+        }, 540000)
+    }
+
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
 
-        await axios.post('http://localhost:3000/login', {
+        const res = await axios.post('http://localhost:3000/login', {
                 phone: phone1,
                 pass: password1,
             },
         )
-        .then(() => {
+
+        if(res.status == 200) {
+            dispatch(setUser(res.data.user))
+            setUser1(res.data.user)
+            // console.log(user)
+            dispatch(setToken(res.data.token))
             dispatch(changeLoginState(true))
+            // console.log(res.data.user)
             setBlock1(Display.NONE)
             navigate('/chat')
-        })
-        .catch((error): void => {
-            console.log('Error', error)
+            // console.log(res.data.token.refreshToken, '-', res.data.user.idUser)
+            updateToken(res.data.token.refreshToken, res.data.user.idUser)
+        }
+        else {
             setBlock1(Display.BLOCK)
-        })
+            console.log('Error when log in')
+        }
     }
 
     const handleSignup = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

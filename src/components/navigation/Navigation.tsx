@@ -1,10 +1,11 @@
-import { faArrowRightFromBracket, faComment, faGear, faHouse, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faComment, faGear, faUser } from '@fortawesome/free-solid-svg-icons'
 import './Navigation.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' 
 import { useState } from 'react'
-import { useAppDispatch } from '../../redux/Store'
+import { useAppDispatch, useAppSelector } from '../../redux/Store'
 import { useNavigate } from 'react-router-dom'
 import { changeLoginState } from '../../redux/LoginSlice'
+import axios from 'axios'
 
 enum NavItem {
   HOME = 0,
@@ -16,31 +17,59 @@ enum NavItem {
 
 const Navigation = () => {
 
-  const [active, setActive] = useState<NavItem>(NavItem.HOME)
+  const [active, setActive] = useState<number>(NavItem.CHAT)
 
   const dispatch = useAppDispatch()
+  const token = useAppSelector((state) => state.token.token)
+  const user = useAppSelector((state) => state.user.userInfo)
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    dispatch(changeLoginState(false))
-    navigate('/welcome')
+  const handleLogout = async () => {
+    const res = await axios.post('http://localhost:3000/logout', { idUser: user.idUser}, {headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token.accessToken}`
+    }})
+    // console.log(res)
+
+    if(res.status == 200) {
+      dispatch(changeLoginState(false))
+      navigate('/welcome')
+    }
+    else {
+      console.log('Error when logout')
+    }
   }
 
+  // console.log(window.location.href)
+
   return (
-    <div className='nav-wrapper'>
-      <div className={`${active == NavItem.HOME ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.HOME)}>
+    <div className='nav-wrapper' style={{display: `${window.location.href == 'http://localhost:5173/welcome' ? 'none' : 'flex'}`}}>
+      {/* <div className={`${active == NavItem.HOME ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+          setActive(NavItem.HOME)
+          navigate('')
+      }}>
         <FontAwesomeIcon className='nav-icon' icon={faHouse} />
         <p>Trang chủ</p>
-      </div>
-      <div className={`${active == NavItem.CHAT ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.CHAT)}>
+      </div> */}
+      <div className={`${active == NavItem.CHAT ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+          setActive(NavItem.CHAT)
+          navigate('/chat')
+      }}>
         <FontAwesomeIcon className='nav-icon' icon={faComment} />
         <p>Tin nhắn</p>
       </div>
-      <div className={`${active == NavItem.PROFILE ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.PROFILE)}>
+      <div className={`${active == NavItem.PROFILE ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+        navigate(`/profile/${user.idUser}`)
+        console.log(NavItem.PROFILE)
+        setActive(NavItem.PROFILE)
+      }}>
         <FontAwesomeIcon className='nav-icon' icon={faUser} />
         <p>Trang cá nhân</p>
       </div>
-      <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => setActive(NavItem.SETTING)}>
+      <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+        navigate('/setting')
+        setActive(NavItem.SETTING)
+      }}>
         <FontAwesomeIcon className='nav-icon' icon={faGear} />  
         <p>Cài đặt</p>
       </div>    

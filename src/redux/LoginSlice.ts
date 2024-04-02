@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit"
 
 interface LoginState {
-    isLogin: boolean
+    isLogin: boolean,
 }
 
 const initialState: LoginState = {
-    isLogin: false
+    isLogin: false,
 }
 
 export const LoginSlice = createSlice({
