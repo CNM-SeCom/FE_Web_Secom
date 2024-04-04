@@ -20,7 +20,7 @@ const Navigation = () => {
   const [active, setActive] = useState<number>(NavItem.CHAT)
 
   const dispatch = useAppDispatch()
-  const token = useAppSelector((state) => state.token.token)
+  const token: string | null = useAppSelector((state) => state.token.token)
   const user = useAppSelector((state) => state.user.userInfo)
   const navigate = useNavigate()
 
@@ -43,7 +43,8 @@ const Navigation = () => {
   // console.log(window.location.href)
 
   return (
-    <div className='nav-wrapper' style={{display: `${window.location.href == 'http://localhost:5173/welcome' ? 'none' : 'flex'}`}}>
+    <div className='nav-wrapper' 
+         style={{display: `${window.location.href == 'http://localhost:5173/welcome' || window.location.href == 'http://localhost:5173/forgot-password' ? 'none' : 'flex'}`}}>
       {/* <div className={`${active == NavItem.HOME ? 'nav-item active' : 'nav-item'}`} onClick={() => {
           setActive(NavItem.HOME)
           navigate('')

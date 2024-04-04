@@ -7,6 +7,7 @@ import axios from 'axios';
 import { setUser } from '../../redux/UserSlice';
 import { setToken } from '../../redux/TokenSlice';
 import { UserInterface } from '../../interface/Interface';
+import { setPhone } from '../../redux/PhoneSlice';
 
 enum Display {
     NONE = 'none',
@@ -15,9 +16,9 @@ enum Display {
 
 const Welcome = () => {
     const [isSignUp, setIsSignUp] = useState<boolean>(false);
-    const [phone1, setPhone1] = useState<string>('0348307336')
+    const [phone1, setPhone1] = useState<string>('')
     const [phone2, setPhone2] = useState<string>('')
-    const [password1, setPassword1] = useState<string>('aaaaaaaaA1@')
+    const [password1, setPassword1] = useState<string>('')
     const [password2, setPassword2] = useState<string>('')
     const [password3, setPassword3] = useState<string>('')
     const [block1, setBlock1] = useState<Display>(Display.NONE)
@@ -25,6 +26,7 @@ const Welcome = () => {
     const [gender, setGender] = useState<string>('')
     const [name, setName] = useState<string>('')
     const [user1, setUser1] = useState<UserInterface>()
+    const [count, setCount] = useState<number>(0)
 
     const toggleSignUp = () => {
         setIsSignUp(!isSignUp);
@@ -45,6 +47,7 @@ const Welcome = () => {
             dispatch(setToken(res.data))
             if(user1 !== null) {
                 updateToken(res.data.refreshToken, idUser)
+                console.log(111)
             }
         })
         }, 540000)
@@ -53,27 +56,35 @@ const Welcome = () => {
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
 
-        const res = await axios.post('http://localhost:3000/login', {
-                phone: phone1,
-                pass: password1,
-            },
-        )
+        console.log(password1)
 
-        if(res.status == 200) {
-            dispatch(setUser(res.data.user))
-            setUser1(res.data.user)
-            // console.log(user)
-            dispatch(setToken(res.data.token))
-            dispatch(changeLoginState(true))
-            // console.log(res.data.user)
-            setBlock1(Display.NONE)
-            navigate('/chat')
-            // console.log(res.data.token.refreshToken, '-', res.data.user.idUser)
-            updateToken(res.data.token.refreshToken, res.data.user.idUser)
+        if(count < 3) {
+            await axios.post('http://localhost:3000/login', {
+                    phone: phone1,
+                    pass: password1,
+                },
+            )
+            .then((res) => {
+                dispatch(setUser(res.data.user))
+                setUser1(res.data.user)
+                // console.log(user)
+                dispatch(setToken(res.data.token))
+                dispatch(changeLoginState(true))
+                // console.log(res.data.user)
+                setBlock1(Display.NONE)
+                navigate('/chat')
+                // console.log(res.data.token.refreshToken, '-', res.data.user.idUser)
+                updateToken(res.data.token.refreshToken, res.data.user.idUser)
+            })
+            .catch(() => {
+                dispatch(setPhone(phone1))
+                setBlock1(Display.BLOCK)
+                setCount(count + 1)
+                console.log('Error when log in')
+            })
         }
         else {
-            setBlock1(Display.BLOCK)
-            console.log('Error when log in')
+            navigate('/forgot-password')
         }
     }
 
@@ -113,7 +124,7 @@ const Welcome = () => {
                 </label>
                 <div className="wrong-info-wrapper">
                     <p className='wrong-info-txt' style={{display: `${block1}`}}>Vui lòng nhập đúng thông tin!</p>
-                    <p className="forgot-pass">Quên mật khẩu?</p>
+                    <p className="forgot-pass" onClick={() => navigate('/forgot-password')}>Quên mật khẩu?</p>
                 </div>
                 <button type="button" className="submit" onClick={(e) => handleLogin(e)}>Đăng nhập</button>
             </div>
