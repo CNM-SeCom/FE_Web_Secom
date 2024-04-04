@@ -27,12 +27,14 @@ const Welcome = () => {
     const [name, setName] = useState<string>('')
     const [user1, setUser1] = useState<UserInterface>()
     const [count, setCount] = useState<number>(0)
+    const [email, setEmail] = useState<string>('')
 
     const toggleSignUp = () => {
         setIsSignUp(!isSignUp);
     }
 
     const dispatch = useAppDispatch()
+    // const isVerify: boolean = useAppSelector((state) => state.otp.isVerify)
     const navigate = useNavigate()
 
     const updateToken = async (refreshToken: string, idUser: string) => {
@@ -55,8 +57,6 @@ const Welcome = () => {
 
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-
-        console.log(password1)
 
         if(count < 3) {
             await axios.post('http://localhost:3000/login', {
@@ -84,7 +84,16 @@ const Welcome = () => {
             })
         }
         else {
-            navigate('/forgot-password')
+            await axios.post('http://localhost:3000/findEmailByPhone', {
+                phone: phone1,
+            })
+            .then((res) => {
+                // console.log(res.data.data)
+                navigate('/form-email', { state: { email: res.data.data, phone: phone1, } })
+            })
+            .catch(() => {
+                console.log('Error when find email by phone')
+            })
         }
     }
 
@@ -95,17 +104,22 @@ const Welcome = () => {
             setBlock2(Display.BLOCK)
         }
         else {
-            await axios.post('http://localhost:3000/create', {
-                phone: phone2,
-                name: name,
-                gender: gender,
-                pass: password2,
+            await axios.post('http://localhost:3000/sendOTP', {
+                email: email,
             })
             .then(() => {
-                setIsSignUp(false)
+                navigate('/verify-otp', { state: { 
+                    phone: phone2,
+                    name: name,
+                    gender: gender,
+                    pass: password2,
+                    email: email,
+                    dob: '', 
+                    flag: 1,
+                }})
             })
-            .catch((error): void => {
-                console.log('Error: ', error)
+            .catch(() => {
+                console.log('Error when send OTP')
             })
         }
     }
@@ -124,7 +138,7 @@ const Welcome = () => {
                 </label>
                 <div className="wrong-info-wrapper">
                     <p className='wrong-info-txt' style={{display: `${block1}`}}>Vui lòng nhập đúng thông tin!</p>
-                    <p className="forgot-pass" onClick={() => navigate('/forgot-password')}>Quên mật khẩu?</p>
+                    <p className="forgot-pass" onClick={() => navigate('/form-email')}>Quên mật khẩu?</p>
                 </div>
                 <button type="button" className="submit" onClick={(e) => handleLogin(e)}>Đăng nhập</button>
             </div>
@@ -148,6 +162,10 @@ const Welcome = () => {
                         <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
                     </label>
                     <label>
+                        <span>Email</span>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    </label>
+                    <label>
                         <span>Số điện thoại</span>
                         <input type="text" value={phone2} onChange={(e) => setPhone2(e.target.value)} />
                     </label>
@@ -162,9 +180,9 @@ const Welcome = () => {
                     <label>
                         <span>Giới tính</span>
                         <select name='gender' onChange={(e) => setGender(e.target.value)}>
-                            <option value="male">Nam</option>
-                            <option value="female">Nữ</option>
-                            <option value="other">Khác</option>
+                            <option value="0">Nam</option>
+                            <option value="1">Nữ</option>
+                            {/* <option value="other">Khác</option> */}
                         </select>
                     </label>
                     <p className='wrong-info-txt' style={{display: `${block2}`}}>Xác nhận mật khẩu không đúng!</p>

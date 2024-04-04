@@ -5,7 +5,9 @@ import Chat from './components/chat/Chat'
 import Profile from './components/profile/Profile'
 import Welcome from './components/welcome/Welcome'
 import Navigation from './components/navigation/Navigation'
-import ForgotPassword from './components/forgotPassword/ForgotPassword'
+import VerifyOTP from './components/verifyOTP/VerifyOTP'
+import ChangePassword from './components/forgotPassword/changePassword/ChangePassword'
+import FormEmail from './components/forgotPassword/formEmail/FormEmail'
 
 function App() {
 
@@ -17,7 +19,9 @@ function App() {
         <Route path='/chat' element={<Chat />} />
         <Route path='/profile/:idUser' element={<Profile />} />
         <Route path='/welcome' element={<Welcome />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/change-password' element={<ChangePassword />} />
+        <Route path='/form-email' element={<FormEmail />} />
+        <Route path='/verify-otp' element={<VerifyOTP />} />
         {/* <Route path='/setting' element={<Setting />} /> */}
       </Routes>
     </Router>

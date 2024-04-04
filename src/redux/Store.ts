@@ -4,6 +4,7 @@ import LoginSlice from "./LoginSlice";
 import TokenSlice from "./TokenSlice";
 import UserSlice from "./UserSlice";
 import PhoneSlice from "./PhoneSlice";
+import OTPSlice from "./OTPSlice";
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         token: TokenSlice,
         user: UserSlice,
         phone: PhoneSlice,
+        otp: OTPSlice,
     }
 })
 
