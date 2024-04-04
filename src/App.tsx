@@ -6,6 +6,7 @@ import Profile from './components/profile/Profile'
 import Welcome from './components/welcome/Welcome'
 import Navigation from './components/navigation/Navigation'
 import ForgotPassword from './components/forgotPassword/ForgotPassword'
+import Setting from './components/setting/Setting';
 
 function App() {
 
@@ -18,7 +19,7 @@ function App() {
         <Route path='/profile/:idUser' element={<Profile />} />
         <Route path='/welcome' element={<Welcome />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
-        {/* <Route path='/setting' element={<Setting />} /> */}
+        <Route path='/setting' element={<Setting />} />
       </Routes>
     </Router>
   )

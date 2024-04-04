@@ -1,10 +1,9 @@
 import './Profile.scss'
-import avatar from '../../assets/person/7.jpeg'
-import pagebackground from '../../assets/3.jpeg'
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppSelector } from '../../redux/Store'
 import { UserInterface } from '../../interface/Interface'
+
 
 const Profile = () => {
 
@@ -23,26 +22,18 @@ const Profile = () => {
   }, [])
 
   return (
-    <>
       <div className="profile">
-        <div className="profileRight">
           <div className="profileRightTop">
             <div className="profileCover">
-              <img
-                className="profileCoverImg"
-                src={pagebackground}
-                alt=""
-              />
-              <img
-                className="profileUserImg"
-                src={avatar}
-                alt=""
-              />
-            </div>
-            <div className="profileInfo">
-                <h4 className="profileInfoName">Safak Kocaoglu</h4>
-                <span className="profileInfoDesc">350 bạn bè</span>
+              <img className="profileCoverImg"src={user.coverImage }alt=""/>
+              <button className='updateCoverImg'><text>Chỉnh sửa ảnh bìa</text></button>
+              <img className="profileUserImg" src={user.avatar} alt="" />
+              <button className='updateAvatar'>U</button>
+              <div className="profileInfo">
+                <h4 className="profileInfoName">{user.name}</h4>
+                <span className="profileInfoDesc">{user.listFriend.length} bạn bè</span>
                 
+              </div>
             </div>
           </div>
           <div className="profileRightBottom">
@@ -63,13 +54,13 @@ const Profile = () => {
                   <text>Độc thân</text>
                 </div>
               </div>
-              <button className='themtieusu'>Chỉnh sửa chi tiết</button>
+              <button className='themtieusu' onClick={() => navigate('/setting')}>Chỉnh sửa chi tiết</button>
               <button className='themtieusu'>Thêm nội dung đáng chú ý</button>
             </div>
             <div className='userFeed'>
                 <div className='subUserFeed1'>
                     <div className='subUserFeed1top'>
-                    <img className="subUserFeed1Img" src={avatar} alt=""/>
+                    <img className="subUserFeed1Img" src={user.avatar} alt=""/>
                     <input className='bandangnghigi' placeholder='Bạn đang nghĩ gì?'/>
                     </div>
                     
@@ -86,13 +77,11 @@ const Profile = () => {
                     </div>
                 </div>
                 <div className='subUserFeed1'>
-                    
+                    Bản tin
                 </div>
             </div>
           </div>
-        </div>
       </div>
-    </>
   )
 }
 

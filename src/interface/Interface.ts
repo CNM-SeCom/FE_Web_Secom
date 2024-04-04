@@ -1,4 +1,5 @@
 export interface UserInterface {
+    coverImage: string | undefined;
     idUser: string,
     address: string,
     avatar: string,
