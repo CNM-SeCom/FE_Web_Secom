@@ -1,96 +1,92 @@
-.setting{
-    display: flex;
-    background-color: rgb(220, 220, 220);
-    color: black;
-    flex-direction: column;
+form {
     width: 100%;
-    align-items: center;
+    background-color: rgb(220, 220, 220);
 
-    .title{
-        height: 60px;
-        font-size: 25px;
-        width: 50%;
-        text-align: center;
-        font-weight: bold;
-        border-bottom: 1px solid rgb(217, 217, 217);
-        padding: 15px;
-        background-color: white;
-    }
+    .setting{
+        display: flex;
+        background-color: rgb(220, 220, 220);
+        color: black;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
 
-    .image{
-        background-color: white;
-        width: 50%;
-        flex: 1;
-        position: relative;
-        padding: 20px;
-
-        text{
+        .title{
+            margin-top: 40px;
+            height: 60px;
+            font-size: 25px;
+            width: 50%;
+            text-align: center;
             font-weight: bold;
-            font-size: 20px;
-            
+            border-bottom: 1px solid rgb(217, 217, 217);
+            padding: 15px;
+            background-color: white;
         }
 
-        input{
-             border: none;
-        }
-        
+        .image{
+            background-color: white;
+            width: 50%;
+            padding: 20px;
 
-    }
-    .cover{
-        background-color: white;
-        width: 50%;
-        flex: 1;
-        position: relative;
-        padding: 20px;
+            text{
+                font-weight: bold;
+                font-size: 20px;
+                
+            }
 
-        text{
-            font-weight: bold;
-            font-size: 20px;
-            
-        }
-
-        input{
-             border: none;
-        }
-        
-
-    }
-
-    .info{
-        background-color: white;
-        width: 50%;
-        flex: 8;
-        padding: 20px;
-
-        .infoTitle{
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        .ten{
-            padding: 10px;
             input{
-                background-color: rgb(227, 227, 227);
-                width: 100%;
-                border-radius: 10px;
                 border: none;
-                text-align: start;
-                color: black;
             }
         }
-    }
-    .btnCapNhat{
-        background-color: white;
-        width: 50%;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        position: relative;
-        Button{
-            position: absolute;
-            top: -20px;
-            left: 240px;
+        .cover{
+            background-color: white;
+            width: 50%;
+            padding: 20px;
+
+            text{
+                font-weight: bold;
+                font-size: 20px;
+                
+            }
+
+            input{
+                border: none;
+            }
         }
+
+        .info{
+            background-color: white;
+            width: 50%;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+
+            .infoTitle{
+                font-weight: bold;
+                font-size: 20px;
+            }
+
+            .ten{
+                width: 100%;
+                padding: 10px;
+                input{
+                    background-color: rgb(227, 227, 227);
+                    width: 100%;
+                    border-radius: 10px;
+                    border: none;
+                    text-align: start;
+                    color: black;
+                }
+            }
+        }
+        .btnCapNhat{
+            width: 50%;
+            margin-top: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
     }
-    
 }

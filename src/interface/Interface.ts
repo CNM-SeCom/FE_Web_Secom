@@ -4,7 +4,7 @@ export interface UserInterface {
     address: string,
     avatar: string,
     email: string,
-    gender: string,
+    gender: number,
     listBlock: [],
     listChat: [],
     listFriend: [],

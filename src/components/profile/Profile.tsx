@@ -1,23 +1,32 @@
 import './Profile.scss'
-import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useAppSelector } from '../../redux/Store'
 import { UserInterface } from '../../interface/Interface'
 
 
 const Profile = () => {
+  const [avatar, setAvatar] = useState<string>('')
 
   const navigate = useNavigate()
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
-  const params = useParams()
-  const { idUser } = params
+  // const params = useParams()
+  // const { idUser } = params
 
-  console.log(user, idUser)
+  const { state } = useLocation()
+
+  // console.log(user, idUser)
 
   useEffect(() => {
-    if(!isLogin) {
-      navigate('/welcome')
+    // if(!isLogin) {
+    //   navigate('/welcome')
+    // }
+    if(state != null) {
+      setAvatar(state.avatar)
+    }
+    else {
+      setAvatar(user.avatar)
     }
   }, [])
 
@@ -26,8 +35,8 @@ const Profile = () => {
           <div className="profileRightTop">
             <div className="profileCover">
               <img className="profileCoverImg"src={user.coverImage }alt=""/>
-              <button className='updateCoverImg'><text>Chỉnh sửa ảnh bìa</text></button>
-              <img className="profileUserImg" src={user.avatar} alt="" />
+              <button className='updateCoverImg'>Chỉnh sửa ảnh bìa</button>
+              <img className="profileUserImg" src={avatar} alt="" />
               <button className='updateAvatar'>U</button>
               <div className="profileInfo">
                 <h4 className="profileInfoName">{user.name}</h4>
@@ -42,16 +51,16 @@ const Profile = () => {
               <button className='themtieusu'>Thêm tiểu sử</button>
               <div className='ttchitiet'>
                 <div className='tunghoc'>
-                  <text>Từng học tại <text className='chitiet'>Đại học Công Nghiệp thành phố HCM</text></text>
+                  <p>Từng học tại <p className='chitiet'>Đại học Công Nghiệp thành phố HCM</p></p>
                 </div>
                 <div className='dahoc'>
-                  <text>Đã học tại  <text className='chitiet'>Đại học Công Nghiệp thành phố HCM</text></text>
+                  <p>Đã học tại  <p className='chitiet'>Đại học Công Nghiệp thành phố HCM</p></p>
                 </div>
                 <div className='dentu'>
-                  <text>Đến từ  <text className='chitiet'>Long An</text></text>
+                  <p>Đến từ  <p className='chitiet'>Long An</p></p>
                 </div>
                 <div className='tinhtrang'>
-                  <text>Độc thân</text>
+                  <p>Độc thân</p>
                 </div>
               </div>
               <button className='themtieusu' onClick={() => navigate('/setting')}>Chỉnh sửa chi tiết</button>
@@ -65,15 +74,9 @@ const Profile = () => {
                     </div>
                     
                     <div className='subUserFeed11'>
-                      <button className='videotructiep'>
-                        <text>Video trực tiếp</text>
-                      </button>
-                      <button className='anhvavideo'>
-                        <text>Ảnh và video</text>
-                      </button>
-                      <button className='sukientrongdoi'>
-                        <text>Sự kiện trong đời</text>
-                      </button>
+                      <button className='videotructiep'>Video trực tiếp</button>
+                      <button className='anhvavideo'>Ảnh và video</button>
+                      <button className='sukientrongdoi'>Sự kiện trong đời</button>
                     </div>
                 </div>
                 <div className='subUserFeed1'>

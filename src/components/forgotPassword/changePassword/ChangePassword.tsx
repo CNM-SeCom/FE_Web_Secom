@@ -1,39 +1,30 @@
-import { useEffect, useState } from 'react'
-import { useAppSelector } from '../../redux/Store'
-import './ForgotPassword.scss'
+import { useState } from 'react'
+import './ChangePassword.scss'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-const ForgotPassword = () => {
-    const [phone1, setPhone1] = useState<string>('')
+const ChangePassword = () => {
     const [password, setPassword] = useState<string>('')
     const [newPassword, setNewPassword] = useState<string>('')
     const [flag, setFlag] = useState<boolean>(false)
 
-    const phone2: string | null = useAppSelector((state) => state.phone.phone)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        if(phone2 != null) {
-            setPhone1(phone2)
-        }
-    })
+    const { state } = useLocation()
 
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
 
         if(password === newPassword) {
-            console.log(phone1, newPassword)
-
-            await axios.post('http://localhost:3000/changePassword', {
-                phone: phone1,
+            await axios.post('http://localhost:3000/forgotPassword', {
+                phone: state.phone,
                 newPass: newPassword,
             }).then(() => {
+                console.log('Change password successfully')
                 navigate('/welcome')
             })
             .catch(() => {
-                // setFlag(true)
-                console.log(777)
+                console.log('Error when change password')
             })
         }
         else {
@@ -45,12 +36,6 @@ const ForgotPassword = () => {
         <div className="forgot-password-wrapper">
             <div className="form">
                 <h2>Quên mật khẩu</h2>
-                <label>
-                    <span>Số điện thoại</span>
-                    <input type="text" value={`${phone2 !== null ? phone2 : phone1}`} 
-                            onChange={(e) => {setPhone1(e.target.value)}} 
-                    />
-                </label>
                 <label>
                     <span>Mật khẩu mới</span>
                     <input type="password" value={password} onChange={(e) => { setPassword(e.target.value) }} />
@@ -66,4 +51,4 @@ const ForgotPassword = () => {
     )
 }
 
-export default ForgotPassword
+export default ChangePassword
