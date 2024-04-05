@@ -42,7 +42,7 @@ const Navigation = () => {
 
   return (
     <div className='nav-wrapper' 
-         style={{display: `${window.location.href == 'http://localhost:5173/welcome' || window.location.href == 'http://localhost:5173/forgot-password' || window.location.href == 'http://localhost:5173/verify-otp' || window.location.href == 'http://localhost:5173/form-email' || window.location.href == 'http://localhost:5173/change-password'  ? 'none' : 'flex'}`}}>
+         style={{display: `${window.location.href == 'http://localhost:5173/welcome' || window.location.href == 'http://localhost:5173/forgot-password' || window.location.href == 'http://localhost:5173/verify-otp' || window.location.href == 'http://localhost:5173/form-email' || window.location.href == 'http://localhost:5173/change-password' || window.location.href == 'http://localhost:5173/form-phone' ? 'none' : 'flex'}`}}>
       {/* <div className={`${active == NavItem.HOME ? 'nav-item active' : 'nav-item'}`} onClick={() => {
           setActive(NavItem.HOME)
           navigate('')

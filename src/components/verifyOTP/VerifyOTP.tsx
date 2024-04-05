@@ -60,7 +60,7 @@ const VerifyOTP = () => {
                 })
                 navigate('/welcome')
             }
-            else if(state.flag == 2) {
+            else if(state.flag == 2 || state.flag == 3) {
                 navigate('/change-password', { state: { phone: state.phone } })
             }
         })
@@ -76,6 +76,9 @@ const VerifyOTP = () => {
         }
         else if(state.flag == 2) {
             setEmail1(state.emaill)
+        }
+        else if(state.flag == 3) {
+            setEmail1(state.email)
         }
     }, [])
 

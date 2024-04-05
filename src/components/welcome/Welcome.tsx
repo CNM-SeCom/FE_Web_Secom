@@ -23,6 +23,7 @@ const Welcome = () => {
     const [password3, setPassword3] = useState<string>('')
     const [block1, setBlock1] = useState<Display>(Display.NONE)
     const [block2, setBlock2] = useState<Display>(Display.NONE)
+    const [block3, setBlock3] = useState<Display>(Display.NONE)
     const [gender, setGender] = useState<string>('')
     const [name, setName] = useState<string>('')
     const [user1, setUser1] = useState<UserInterface>()
@@ -100,28 +101,36 @@ const Welcome = () => {
     const handleSignup = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
 
-        if(password2 != password3) {
-            setBlock2(Display.BLOCK)
-        }
-        else {
-            await axios.post('http://localhost:3000/sendOTP', {
-                email: email,
-            })
-            .then(() => {
-                navigate('/verify-otp', { state: { 
-                    phone: phone2,
-                    name: name,
-                    gender: gender,
-                    pass: password2,
+        await axios.post('http://localhost:3000/checkPhoneExist', { phone: phone2 })
+        .then(async () => {
+            if(password2 != password3) {
+                setBlock2(Display.BLOCK)
+            }
+            else {
+                await axios.post('http://localhost:3000/sendOTP', {
                     email: email,
-                    dob: '', 
-                    flag: 1,
-                }})
-            })
-            .catch(() => {
-                console.log('Error when send OTP')
-            })
-        }
+                })
+                .then(() => {
+                    navigate('/verify-otp', { state: { 
+                        phone: phone2,
+                        name: name,
+                        gender: gender,
+                        pass: password2,
+                        email: email,
+                        dob: '', 
+                        flag: 1,
+                    }})
+                })
+                .catch(() => {
+                    console.log('Error when send OTP')
+                })
+            }
+        })
+        .catch(() => {
+            setBlock3(Display.BLOCK)
+            console.log(666)
+        })
+
     }
 
     return (
@@ -138,7 +147,7 @@ const Welcome = () => {
                 </label>
                 <div className="wrong-info-wrapper">
                     <p className='wrong-info-txt' style={{display: `${block1}`}}>Vui lòng nhập đúng thông tin!</p>
-                    <p className="forgot-pass" onClick={() => navigate('/form-email')}>Quên mật khẩu?</p>
+                    <p className="forgot-pass" onClick={() => navigate('/form-phone')}>Quên mật khẩu?</p>
                 </div>
                 <button type="button" className="submit" onClick={(e) => handleLogin(e)}>Đăng nhập</button>
             </div>
@@ -186,6 +195,7 @@ const Welcome = () => {
                         </select>
                     </label>
                     <p className='wrong-info-txt' style={{display: `${block2}`}}>Xác nhận mật khẩu không đúng!</p>
+                    <p className='wrong-info-txt' style={{display: `${block3}`}}>Tài khoản đã tồn tại!</p>
                     <button type="button" className="submit" onClick={(e) => handleSignup(e)}>Đăng ký</button>
                 </div>
             </div>

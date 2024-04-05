@@ -8,6 +8,7 @@ import Navigation from './components/navigation/Navigation'
 import VerifyOTP from './components/verifyOTP/VerifyOTP'
 import ChangePassword from './components/forgotPassword/changePassword/ChangePassword'
 import FormEmail from './components/forgotPassword/formEmail/FormEmail'
+import FormPhone from './components/forgotPassword/formPhone/FormPhone'
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
         <Route path='/welcome' element={<Welcome />} />
         <Route path='/change-password' element={<ChangePassword />} />
         <Route path='/form-email' element={<FormEmail />} />
+        <Route path='/form-phone' element={<FormPhone />} />
         <Route path='/verify-otp' element={<VerifyOTP />} />
         {/* <Route path='/setting' element={<Setting />} /> */}
       </Routes>
