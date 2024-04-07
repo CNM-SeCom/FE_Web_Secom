@@ -69,7 +69,17 @@ form {
             .ten{
                 width: 100%;
                 padding: 10px;
+
                 input{
+                    background-color: rgb(227, 227, 227);
+                    width: 100%;
+                    border-radius: 10px;
+                    border: none;
+                    text-align: start;
+                    color: black;
+                }
+
+                .Gender{
                     background-color: rgb(227, 227, 227);
                     width: 100%;
                     border-radius: 10px;

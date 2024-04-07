@@ -8,6 +8,7 @@ interface UserState {
 const initialState: UserState = {
     userInfo: {
         idUser: '',
+        coverImage: '',
         address: '',
         avatar: '',
         email: '',
@@ -27,9 +28,18 @@ const UserSlice = createSlice({
     reducers: {
         setUser: (state, action) => {
             state.userInfo = action.payload
+        },
+        setNameUser: (state, action) => {
+            state.userInfo.name = action.payload
+        },
+        setAvatarUser: (state, action) => {
+            state.userInfo.avatar = action.payload
+        },
+        setCoverUser: (state, action) => {
+            state.userInfo.coverImage = action.payload
         }
     }
 })
 
 export default UserSlice.reducer
-export const { setUser } = UserSlice.actions
+export const { setUser, setNameUser, setAvatarUser, setCoverUser} = UserSlice.actions
