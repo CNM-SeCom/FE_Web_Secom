@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { setNameUser, setAvatarUser, setCoverUser } from '../../redux/UserSlice';
+import { setNameUser, setAvatarUser, setCoverUser, setUser } from '../../redux/UserSlice';
 
 const Setting = () => {
   const [avatar, setAvatar] = useState(null) 
@@ -96,13 +96,11 @@ const Setting = () => {
 
   const handleSubmitName = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-        await axios.post('http://localhost:3000/changeProfile', {
-            idUser: user.idUser,
+        await axios.post('http://localhost:3000/getListUserByName', {
             name: name,
         }).then(() => {
             console.log('Change name successfully')
-            updateNameRedux()
-            navigate('/profile', { state: {name: name}})
+            navigate('/profile', { state: { name: name } })
         })
         .catch(() => {
             console.log('Error when change name')
