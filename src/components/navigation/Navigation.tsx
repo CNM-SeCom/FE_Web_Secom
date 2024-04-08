@@ -58,7 +58,8 @@ const Navigation = () => {
         <p>Tin nhắn</p>
       </div>
       <div className={`${active == NavItem.PROFILE ? 'nav-item active' : 'nav-item'}`} onClick={() => {
-        navigate(`/profile/${user.idUser}`)
+        // navigate(`/profile/${user.idUser}`)
+        navigate(`/profile`)
         console.log(NavItem.PROFILE)
         setActive(NavItem.PROFILE)
       }}>

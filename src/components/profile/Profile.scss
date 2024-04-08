@@ -3,169 +3,207 @@
     display: flex;
     background-color: white;
     color: black;
-}
-
-.profileRight{
-    flex: 9;
-}
-
-.profileCover{
-    height: 320px;
-    position: relative;
-}
-
-.profileCoverImg{
+    flex-direction: column;
     width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-bottom-right-radius: 15px;
-    border-bottom-left-radius: 15px;
-}
 
-.profileUserImg{
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    object-fit: cover;
-    position: absolute;
-    left: 50px;
-    margin: auto;
-    top: 200px;
-    border: 3px solid white;
-}
+    .profileCover{
+        height: 450px;
+        position: relative;
 
-.profileInfo{
-    
-    object-fit: cover;
-    position: relative;
-    left: 280px;
-    top: -80px;
-}
-
-.profileInfoName{
-    font-size: 24px;
-}
-
-.profileInfoDesc{
-    font-weight: 300;
-    position: relative;
-    top: -30px
-}
-
-
-.profileRightBottom{
-    display: flex;
-    background-color: rgb(245, 245, 245);
-    padding: 10px;
-}
-
-.userInfo {
-    flex: 2;
-    padding: 20px;
-    margin: 20px;
-    background-color: white;
-    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 7px;
-    border: 1px;
-    border-color: gray;
-}
-.userFeed{
-    flex: 3;
-    margin: 20px;
-    margin-left: 0;
-}
-.subUserFeed1{
-    padding: 10px;
-    padding-bottom: 0px;
-    background-color: white;
-    box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 7px;
-    border: 1px;
-    border-color: gray;
-    .subUserFeed1top{
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-        .subUserFeed1Img{
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-        }
-        .bandangnghigi{
-            background-color: rgb(232, 232, 232);
-            border: none;
-            color: rgb(51, 51, 51);
-            border-radius: 20px;
-            height: 20px;
-            padding: 10px;
-            padding-left: 20px;
-            margin-left: 20px;
-            
-            flex: 6;
+        .updateAvatar{
+            width: 40px;
+            height: 40px;
+            background-color: rgb(221, 221, 221);
+            position: absolute;
+            left: 200px;
+            bottom: 65px;
             &:hover {
-                background-color: rgb(205, 205, 205);
+                background-color: rgb(207, 207, 207);
               }
+        }
+        
+        .updateCoverImg{
+            background-color: rgb(234, 234, 234);
+            position: absolute;
+            right: 20px;
+            top: 200px;
+            border-radius: 10px;
+            height: 40px;
+            width: 200px;
+            color: black;
+            font-size: 14px;
+            font-weight: bold;
+            &:hover {
+                background-color: rgb(216, 216, 216);
+              }
+        }
+
+        .profileCoverImg{
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+        }
+        
+        .profileUserImg{
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: absolute;
+            left: 50px;
+            margin: auto;
+            top: 200px;
+            border: 3px solid white;
+        }
+
+        .profileInfo{
+            object-fit: cover;
+            position: relative;
+            left: 250px;
+            padding: 20px;
             
+            .profileInfoName{
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+
+            .profileInfoDesc{
+                font-weight: 300;
+                position: relative;
+                margin-bottom: 10px;
+            }
+
+            .friendlist{
+                flex-direction: row;
+                margin-top: 20px;
+                
+                .friendlistImg{
+                    height: 50px;
+                    width: 50px;
+                    border-radius: 50%;
+                }
+            }
+
         }
     }
-}
-
-.subUserFeed11{
-    border-top: 1px solid rgb(198, 198, 198);
-    display: flex;
-    flex-direction: row;
-    text-align: center;
-    padding: 10px;
-    .videotructiep{
-        flex: 1px;
+   
+    .profileRightBottom{
+        display: flex;
+        background-color: rgb(245, 245, 245);
         padding: 10px;
-    }
-    .anhvavideo{
-        flex: 1px;
-        padding: 10px;
-    }
-    .sukientrongdoi{
-        flex: 1px;
-        padding: 10px;
-    }
-    button{
-        background-color: white;
-        border: none;
-        color: black;
-        &:hover {
-            background-color: rgb(205, 205, 205);
-          }
-        border-radius: 10px;
+
+        .userInfo {
+            flex: 2;
+            padding: 20px;
+            margin: 20px;
+            background-color: white;
+            box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 7px;
+            border: 1px;
+            border-color: gray;
+
+            .themtieusu{
+                background-color: rgb(212, 212, 212);
+                border: 0px;
+                color: black;
+                font-size: 15px; 
+                width: 100%;   
+                border-radius: 6px;
+                height: 35px;
+                &:hover {
+                    background-color: rgb(181, 181, 181);
+                  }
+                margin-bottom: 10px;
+                margin-top: 10px;
+            
+            }
+            .ttchitiet{
+                padding-top: 10px;
+                padding-bottom: 10px;
+                text{
+                    font-size: 15px;
+                    color: rgb(61, 61, 61);
+                    
+                }
+                .chitiet{
+                    font-weight: bold;
+                }
+            }
+        }
+        .userFeed{
+            flex: 3;
+            margin: 20px;
+            margin-left: 0;
+
+            .subUserFeed1{
+                padding: 10px;
+                padding-bottom: 0px;
+                background-color: white;
+                box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.1);
+                border-radius: 7px;
+                border: 1px;
+                border-color: gray;
+
+                .subUserFeed1top{
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    .subUserFeed1Img{
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 50%;
+                    }
+                    .bandangnghigi{
+                        background-color: rgb(232, 232, 232);
+                        border: none;
+                        color: rgb(51, 51, 51);
+                        border-radius: 20px;
+                        height: 40px;
+                        padding: 10px;
+                        padding-left: 20px;
+                        margin-left: 20px;
+                        text-align: start;
+                        
+                        flex: 6;
+                        &:hover {
+                            background-color: rgb(205, 205, 205);
+                          }
+                        
+                    }
+                }
+
+                .subUserFeed11{
+                    border-top: 1px solid rgb(198, 198, 198);
+                    display: flex;
+                    flex-direction: row;
+                    text-align: center;
+                    padding: 10px;
+                    margin-bottom: 20px;
+                    .videotructiep{
+                        flex: 1px;
+                        padding: 10px;
+                    }
+                    .anhvavideo{
+                        flex: 1px;
+                        padding: 10px;
+                    }
+                    .sukientrongdoi{
+                        flex: 1px;
+                        padding: 10px;
+                    }
+                    button{
+                        background-color: white;
+                        border: none;
+                        color: black;
+                        &:hover {
+                            background-color: rgb(205, 205, 205);
+                          }
+                        border-radius: 10px;
+                    }
+                }
+            }
+        }  
     }
 }
-
-
-.themtieusu{
-    background-color: rgb(212, 212, 212);
-    border: 0px;
-    color: black;
-    font-size: 15px; 
-    width: 100%;   
-    border-radius: 6px;
-    height: 35px;
-    &:hover {
-        background-color: rgb(181, 181, 181);
-      }
-    margin-bottom: 10px;
-    margin-top: 10px;
-
-}
-.ttchitiet{
-    padding-top: 10px;
-    padding-bottom: 10px;
-    text{
-        font-size: 15px;
-        color: rgb(61, 61, 61);
-        
-    }
-    .chitiet{
-        font-weight: bold;
-    }
-}
-
-
