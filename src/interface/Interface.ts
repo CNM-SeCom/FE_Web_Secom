@@ -11,3 +11,21 @@ export interface UserInterface {
     phone: string,
     refreshToken: string,
 }   
+
+export interface FriendInterface {
+    avatar: string,
+    idUser: string,
+    name: string,
+}
+
+export interface ChatInterface {
+    createdAt: string,
+    id: string,
+    type: string,
+    lastMessage: string,
+    lastMessageTime: string,
+    lastSenderName: string,
+    lastMessageRead: boolean,
+    lastSenderId: string,
+    participants: FriendInterface[],
+}

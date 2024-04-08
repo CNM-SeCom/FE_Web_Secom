@@ -1,19 +1,51 @@
+import { ChatInterface } from '../../interface/Interface'
+import { setCurrentChatId, setCurrentReceiver } from '../../redux/CurentChatSlice'
+import { useAppDispatch, useAppSelector } from '../../redux/Store'
 import './Conversation.scss'
-import avatar from '../../assets/avatar.png'
 
 interface Props {
-  id: number,
-  setActive: React.Dispatch<React.SetStateAction<number>>,
-  active: number,
+  friendId: string,
+  setActive: React.Dispatch<React.SetStateAction<string>>,
+  active: string,
+  name: string,
+  avatar: string,
+  chats: ChatInterface[],
 }
 
-const Conversation = ({ id, setActive, active } : Props) => {
+const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Props) => {
+
+  const dispatch = useAppDispatch()
+  const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
+
+  const setCurrentChatID = () => {
+    chats.forEach((c) => {
+      let flag: number = 0
+
+      c.participants.forEach((p) => {
+        if(p.idUser === friendId || p.idUser === userId) {
+          flag++
+        }
+        if(p.idUser === friendId) {
+          dispatch(setCurrentReceiver(p))
+        }
+      })
+
+      if(flag === 2) {
+        dispatch(setCurrentChatId(c.id))
+        flag = 0
+      }
+    })
+  }
 
   return (
-    <div className={`${active === id ? 'conversation-wrapper active' : 'conversation-wrapper'}`} onClick={() => {setActive(id)}}>
+    <div className={`${active === friendId ? 'conversation-wrapper active' : 'conversation-wrapper'}`}
+          onClick={() => {
+            setActive(friendId)
+            setCurrentChatID()
+          }}>
       <img src={avatar} alt='avatar-user' />
       <div className="conversation-info">
-        <h4>Triet Kun</h4>
+        <h4>{name}</h4>
         <p>gsdjkljgdslkjglksjkldsjglksdjlkgjdskljgldksjgldfskksdgjl</p>
       </div>
       <div className="time-wrapper">

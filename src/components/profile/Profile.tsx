@@ -35,14 +35,13 @@ const Profile = () => {
               />
               <img
                 className="profileUserImg"
-                src={avatar}
+                src={user.avatar}
                 alt=""
               />
             </div>
             <div className="profileInfo">
-                <h4 className="profileInfoName">Safak Kocaoglu</h4>
-                <span className="profileInfoDesc">350 bạn bè</span>
-                
+                <h4 className="profileInfoName">{user.name}</h4>
+                {/* <span className="profileInfoDesc">350 bạn bè</span> */}
             </div>
           </div>
           <div className="profileRightBottom">
