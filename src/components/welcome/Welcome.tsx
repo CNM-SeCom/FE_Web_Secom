@@ -50,7 +50,7 @@ const Welcome = () => {
             dispatch(setToken(res.data))
             if(user1 !== null) {
                 updateToken(res.data.refreshToken, idUser)
-                console.log(111)
+                // console.log(111)
             }
         })
         }, 540000)

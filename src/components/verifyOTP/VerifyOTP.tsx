@@ -13,7 +13,13 @@ interface infoSignup {
     phone: string,
 }
 
+enum Display {
+    NONE = 'none',
+    BLOCK = 'block',
+}
+
 const VerifyOTP = () => {
+    const [block, setBlock] = useState<Display>(Display.NONE)
     const [otp, setOtp] = useState<string | number>('')
     const [infoSignup, setInfoSignup] = useState<infoSignup>({
         dob: '',
@@ -65,6 +71,7 @@ const VerifyOTP = () => {
             }
         })
         .catch(() => {
+            setBlock(Display.BLOCK)
             console.log('Error when verify otp')
         })
     }
@@ -91,6 +98,7 @@ const VerifyOTP = () => {
                     <span>OTP</span>
                     <input type="number" value={otp} onChange={(e) => setOtp(e.target.value)} />
                 </label>
+                <p className='wrong-info-txt' style={{display: `${block}`}}>Sai OTP</p>
                 <button type="button" className="submit" onClick={(e) => handleVerifyOTP(e)}>Xác nhận</button>
             </div>
         </div>

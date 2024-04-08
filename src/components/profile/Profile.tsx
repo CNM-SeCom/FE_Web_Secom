@@ -32,6 +32,7 @@ const Profile = () => {
                 <span className="profileInfoDesc">{user.listFriend.length} bạn bè</span>
                 
               </div>
+
             </div>
           </div>
           <div className="profileRightBottom">
