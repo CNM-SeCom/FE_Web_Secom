@@ -5,6 +5,8 @@ import TokenSlice from "./TokenSlice";
 import UserSlice from "./UserSlice";
 import PhoneSlice from "./PhoneSlice";
 import OTPSlice from "./OTPSlice";
+import ListFriendsSlice from "./ListFriendsSlice";
+import CurrentChatSlice from './CurentChatSlice'
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +15,8 @@ export const store = configureStore({
         user: UserSlice,
         phone: PhoneSlice,
         otp: OTPSlice,
+        listFriends: ListFriendsSlice,
+        currentChat: CurrentChatSlice,
     }
 })
 

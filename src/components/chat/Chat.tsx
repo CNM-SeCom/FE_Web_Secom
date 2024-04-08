@@ -9,28 +9,56 @@ import { useAppSelector } from '../../redux/Store'
 import { useNavigate } from 'react-router-dom'
 import AddFriend from './../addFriend/addFriend';
 import axios from 'axios'
-import { UserInterface } from '../../interface/Interface'
+import { ChatInterface, FriendInterface, UserInterface } from '../../interface/Interface'
 
 const Chat = () => {
 
 
-  const [active, setActive] = useState<number>(0)
   const [openModal, setOpenModal] = useState(false)
 
   const [openChat, setOpenChat] = useState(true)
+  
+  const [active, setActive] = useState<string>('')
+  const [listFriends, setListFriends] = useState<FriendInterface[]>([])
+  const [chats, setChats] = useState<ChatInterface[]>([])
 
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
+  const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
 
   const navigate = useNavigate()
 
  
+  // console.log(userId)
+
+  const getConversation = async () => {
+    await axios.post('http://localhost:3000/getListFriendByUserId', { idUser: userId })
+    .then((res) => {
+      // console.log(res.data.data)
+      setListFriends(res.data.data)
+    })
+    .catch(() => {
+      console.log('Error when get list friends')
+    })
+
+    await axios.post('http://localhost:3000/getChatByUserId', { idUser: userId })
+    .then((res) => {
+      // console.log(res.data.data)
+      setChats(res.data.data)
+    })
+    .catch(() => {
+      console.log('Error when get chat')
+    })  
+  }
 
   useEffect(() => {
       if(!isLogin) {
         navigate('/welcome')
       }
-  }, [])
-
+      getConversation()
+    }, [])
+    
+  // console.log('cc', currentChatId)
+  
   return (
     
     <div className='chat-wrapper'>
@@ -41,21 +69,27 @@ const Chat = () => {
       <div className="conversations-wrapper">
         <div className="conversations-header">
           <h4>Tin nhắn (3)</h4>
+
           <button>Tin nhắn mới</button>
           {/* <button onClick={() => {setOpenChat(false)}}>!</button> */}
+
         </div>
         <div className="search-wrapper">
           <input type="text" placeholder='Tìm kiếm...' onClick={() => {setOpenModal(true), setOpenChat(false)}}/>
           <FontAwesomeIcon className='search-icon' icon={faMagnifyingGlass} />
         </div>
         <hr />
-        <Conversation id={1} setActive={setActive} active={active} />
-        <Conversation id={2} setActive={setActive} active={active} />
-        <Conversation id={3} setActive={setActive} active={active} />
-        <Conversation id={4} setActive={setActive} active={active} />
+        {
+          listFriends.map((f) => {
+            return (
+              <Conversation key={f.idUser} friendId={f.idUser} setActive={setActive} active={active} name={f.name} avatar={f.avatar} chats={chats} />
+            )
+          })
+        }
       </div>
         }
       <Messages />
+
     </div>
   )
 }
