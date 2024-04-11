@@ -1,9 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { FriendInterface } from "../interface/Interface";
+import { FriendInterface, MessageInterface } from "../interface/Interface";
+
 
 interface CurrentChatState {
     chatId: string,
     receiver: FriendInterface,
+    messages: MessageInterface[]
 }
 
 const initialState: CurrentChatState = {
@@ -12,7 +14,8 @@ const initialState: CurrentChatState = {
         avatar: '',
         idUser: '',
         name: '',
-    }
+    },
+    messages: []
 }
 
 const CurrentChatSlice = createSlice({
@@ -24,9 +27,12 @@ const CurrentChatSlice = createSlice({
         },
         setCurrentReceiver: (state, action: PayloadAction<FriendInterface>) => {
             state.receiver = action.payload
+        },
+        setCurrentMessage: (state, action: PayloadAction<[]>) => {
+            state.messages = (action.payload)
         }
     }
 })
 
 export default CurrentChatSlice.reducer
-export const { setCurrentChatId, setCurrentReceiver } = CurrentChatSlice.actions
+export const { setCurrentChatId, setCurrentReceiver, setCurrentMessage } = CurrentChatSlice.actions

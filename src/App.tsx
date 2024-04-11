@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 import Home from './components/home/Home'
 import Chat from './components/chat/Chat'
 import Profile from './components/profile/Profile'
@@ -26,6 +26,7 @@ function App() {
         <Route path='/form-email' element={<FormEmail />} />
         <Route path='/form-phone' element={<FormPhone />} />
         <Route path='/verify-otp' element={<VerifyOTP />} />
+        <Route path='*' element={<Navigate to="/welcome" />} />
       </Routes>
     </Router>
   )

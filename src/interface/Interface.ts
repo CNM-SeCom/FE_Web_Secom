@@ -30,3 +30,13 @@ export interface ChatInterface {
     lastSenderId: string,
     participants: FriendInterface[],
 }
+export interface MessageInterface{
+    chatId: string,
+    createdAt: string,
+    image: string,
+    text: string,
+    type: string,
+    user: FriendInterface,
+    video: string,
+    _id: number
+}

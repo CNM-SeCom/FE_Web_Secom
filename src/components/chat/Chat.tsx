@@ -7,9 +7,10 @@ import Conversation from '../conversation/Conversation'
 import { useEffect, useState } from 'react'
 import { useAppSelector } from '../../redux/Store'
 import { useNavigate } from 'react-router-dom'
-import AddFriend from './../addFriend/addFriend';
 import axios from 'axios'
-import { ChatInterface, FriendInterface, UserInterface } from '../../interface/Interface'
+import { ChatInterface, FriendInterface, MessageInterface, UserInterface } from '../../interface/Interface'
+import { useAppDispatch } from '../../redux/Store'
+import { setCurrentMessage } from '../../redux/CurentChatSlice'
 
 const Chat = () => {
 
@@ -24,25 +25,43 @@ const Chat = () => {
 
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
+  const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
+  const currentMessage= useAppSelector((state) => state.currentChat.messages)
+  const dispatch = useAppDispatch()
+  const socket = new WebSocket(`ws://localhost:3001/?idUser=${userId}`);
+  socket.addEventListener('open', function (event) {
+    console.log("Connected to server")
+    socket.send('Hello Server!');
+  });
+  //on message event
+  socket.addEventListener('message', function (event) {
+    console.log('Message from server ', event.data);
+    const data = JSON.parse(event.data)
+    if(receiver.idUser === data.user.idUser){
+      getConversation()
+      const newMessages = [...currentMessage, data]
+      dispatch(setCurrentMessage(newMessages))
+    }
+    else{
+      getConversation()
+    }
+  });
 
   const navigate = useNavigate()
+  let friend={
+    idUser: '',
+    name: '',
+    avatar: ''
+   } 
 
  
   // console.log(userId)
 
   const getConversation = async () => {
-    await axios.post('http://localhost:3000/getListFriendByUserId', { idUser: userId })
-    .then((res) => {
-      // console.log(res.data.data)
-      setListFriends(res.data.data)
-    })
-    .catch(() => {
-      console.log('Error when get list friends')
-    })
+  
 
     await axios.post('http://localhost:3000/getChatByUserId', { idUser: userId })
-    .then((res) => {
-      // console.log(res.data.data)
+    .then((res) => {  
       setChats(res.data.data)
     })
     .catch(() => {
@@ -56,8 +75,7 @@ const Chat = () => {
       }
       getConversation()
     }, [])
-    
-  // console.log('cc', currentChatId)
+
   
   return (
     
@@ -80,18 +98,28 @@ const Chat = () => {
         </div>
         <hr />
         {
-          listFriends.map((f) => {
+          chats.map((c) => {
+            {
+              c.participants.forEach((p) => {
+                if(p.idUser !== userId) {
+                    friend.idUser = p.idUser
+                    friend.name = p.name
+                    friend.avatar = p.avatar
+                }
+              })
+            }
             return (
-              <Conversation key={f.idUser} friendId={f.idUser} setActive={setActive} active={active} name={f.name} avatar={f.avatar} chats={chats} />
+              // <p>aaaa</p>
+              
+              <Conversation key={friend.idUser} friendId={friend.idUser} setActive={setActive} active={active} name={friend.name} avatar={friend.avatar} chats={c} />
             )
           })
         }
       </div>
         }
-      <Messages />
+      {receiver.idUser && <Messages />}
 
     </div>
   )
 }
-
 export default Chat

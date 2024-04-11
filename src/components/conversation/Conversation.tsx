@@ -9,36 +9,26 @@ interface Props {
   active: string,
   name: string,
   avatar: string,
-  chats: ChatInterface[],
+  chats: {},
 }
 
 const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Props) => {
-
   const dispatch = useAppDispatch()
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
+  const friend = {
+    idUser: friendId,
+    name: name,
+    avatar: avatar
+  }
+  console.log("id", chats)
 
   const setCurrentChatID = () => {
-    chats.forEach((c) => {
-      let flag: number = 0
-
-      c.participants.forEach((p) => {
-        if(p.idUser === friendId || p.idUser === userId) {
-          flag++
-        }
-        if(p.idUser === friendId) {
-          dispatch(setCurrentReceiver(p))
-        }
-      })
-
-      if(flag === 2) {
-        dispatch(setCurrentChatId(c.id))
-        flag = 0
-      }
-    })
+        dispatch(setCurrentReceiver(friend))
+        dispatch(setCurrentChatId(chats.id))
   }
 
   return (
-    <div className={`${active === friendId ? 'conversation-wrapper active' : 'conversation-wrapper'}`}
+    <div className= "conversation-wrapper"
           onClick={() => {
             setActive(friendId)
             setCurrentChatID()
@@ -46,7 +36,7 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
       <img src={avatar} alt='avatar-user' />
       <div className="conversation-info">
         <h4>{name}</h4>
-        <p>gsdjkljgdslkjglksjkldsjglksdjlkgjdskljgldksjgldfskksdgjl</p>
+        <p>{chats.lastMessage}</p>
       </div>
       <div className="time-wrapper">
         <p className='time'>12:34</p>
@@ -55,5 +45,6 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
     </div>
   )
 }
+
 
 export default Conversation
