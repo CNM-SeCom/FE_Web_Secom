@@ -5,7 +5,6 @@
     .messages-header {
         display: flex;
         justify-content: space-between;
-        padding: 20px;
         
 
         .mh-left {
@@ -20,6 +19,7 @@
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
+                margin-left: 10px;
             }
         }
 
@@ -28,6 +28,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            .btnCall{
+                background-color: 'black';
+                margin: 10px;
+            }
 
             .avatar-wrapper {
                 display: flex;
@@ -63,15 +67,14 @@
     }
 
     .chat-content-wrapper {
-        height: 81vh;
+        height: 85vh;
         overflow-y: auto;
+        background-color: #bdbdbd;
     }
 
     .input-message-wrapper {
         width: 100%;
         position: relative;
-        padding: 10px;
-        
         input {
             width: 75%;
             padding: 9px 0 9px 9px;
@@ -91,11 +94,9 @@
             border-radius: 5px;
             border: none;
             font-weight: 700;
-            padding: 0px 10px;
         }
         .btnChooseFile{
-          
-            width: 100px;
+            width: 50px;
             position: absolute;
             right: 110px;
             top: 0px;
@@ -104,15 +105,12 @@
             border-radius: 5px;
             border: none;
             font-weight: 700;
-            padding: 0px 10px;
         }
 
         button{
-           
             width: 100px;
             position: absolute;
             right: 20px;
-            top: 10px;
             background-color: #1CA1C1;
             color: #fff;
             border-radius: 5px;
@@ -141,4 +139,5 @@
             color: black;
         }
     }
+    
 }

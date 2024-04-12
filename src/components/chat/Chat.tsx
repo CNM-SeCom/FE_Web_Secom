@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { ChatInterface, FriendInterface, MessageInterface, UserInterface } from '../../interface/Interface'
 import { useAppDispatch } from '../../redux/Store'
-import { setCurrentMessage } from '../../redux/CurentChatSlice'
+import { setCurrentMessage, setCurrentTyping } from '../../redux/CurentChatSlice'
 
 const Chat = () => {
 
@@ -27,6 +27,8 @@ const Chat = () => {
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
   const currentMessage= useAppSelector((state) => state.currentChat.messages)
+  const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
+  const currentChatId = useAppSelector((state) => state.currentChat.chatId)
   const dispatch = useAppDispatch()
   const socket = new WebSocket(`ws://localhost:3001/?idUser=${userId}`);
   socket.addEventListener('open', function (event) {
@@ -35,17 +37,42 @@ const Chat = () => {
   });
   //on message event
   socket.addEventListener('message', function (event) {
-    console.log('Message from server ', event.data);
     const data = JSON.parse(event.data)
-    if(receiver.idUser === data.user.idUser){
-      getConversation()
-      const newMessages = [...currentMessage, data]
-      dispatch(setCurrentMessage(newMessages))
+    if(data.type==="RELOAD_MESSAGE"){
+      if(data.chatId === currentChatId){
+        getMessage()
+      }
+    }else
+    if(data.type==="text"||data.type==="video"||data.type==="image"||data.type==="file"){
+      if(receiver!==null&&receiver.idUser === data.user.idUser){
+        getConversation()
+        const newMessages = [...currentMessage, data]
+        dispatch(setCurrentMessage(newMessages))
+      }
+      else{
+        getConversation()
+      }
     }
-    else{
-      getConversation()
+    else if(data.type==="TYPING"){
+      if(receiver!==null&&currentChatId === data.chatId){
+        dispatch(setCurrentTyping(data.typing))
+      }
+
     }
+
   });
+  const getMessage = async () => {
+    const data = {
+      chatId: currentChatId
+    }
+    await axios.post('http://localhost:3000/getMessageByChatId', data)
+      .then((res) => {
+        dispatch(setCurrentMessage(res.data.data))
+      })
+      .catch(() => {
+        console.log('Error when get message')
+      })
+  }
 
   const navigate = useNavigate()
   let friend={
@@ -58,8 +85,6 @@ const Chat = () => {
   // console.log(userId)
 
   const getConversation = async () => {
-  
-
     await axios.post('http://localhost:3000/getChatByUserId', { idUser: userId })
     .then((res) => {  
       setChats(res.data.data)
@@ -75,7 +100,8 @@ const Chat = () => {
       }
       getConversation()
     }, [])
-
+useEffect(() => {
+}, [currentTyping, currentMessage])
   
   return (
     
@@ -86,7 +112,7 @@ const Chat = () => {
       {openChat && 
       <div className="conversations-wrapper">
         <div className="conversations-header">
-          <h4>Tin nhắn (3)</h4>
+          <h4 style={{color:'black'}}>Tin nhắn (3)</h4>
 
           <button>Tin nhắn mới</button>
           {/* <button onClick={() => {setOpenChat(false)}}>!</button> */}
@@ -115,6 +141,8 @@ const Chat = () => {
             )
           })
         }
+        <div>
+        </div>
       </div>
         }
       {receiver.idUser && <Messages />}

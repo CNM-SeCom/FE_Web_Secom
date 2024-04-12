@@ -6,6 +6,7 @@ interface CurrentChatState {
     chatId: string,
     receiver: FriendInterface,
     messages: MessageInterface[]
+    currentTyping: boolean
 }
 
 const initialState: CurrentChatState = {
@@ -15,7 +16,8 @@ const initialState: CurrentChatState = {
         idUser: '',
         name: '',
     },
-    messages: []
+    messages: [],
+    currentTyping: false
 }
 
 const CurrentChatSlice = createSlice({
@@ -30,9 +32,12 @@ const CurrentChatSlice = createSlice({
         },
         setCurrentMessage: (state, action: PayloadAction<[]>) => {
             state.messages = (action.payload)
+        },
+        setCurrentTyping: (state, action: PayloadAction<boolean>) => {
+            state.currentTyping = action.payload
         }
     }
 })
 
 export default CurrentChatSlice.reducer
-export const { setCurrentChatId, setCurrentReceiver, setCurrentMessage } = CurrentChatSlice.actions
+export const { setCurrentChatId, setCurrentReceiver, setCurrentMessage, setCurrentTyping } = CurrentChatSlice.actions

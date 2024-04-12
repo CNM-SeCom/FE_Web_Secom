@@ -2,6 +2,9 @@ import { ChatInterface } from '../../interface/Interface'
 import { setCurrentChatId, setCurrentReceiver } from '../../redux/CurentChatSlice'
 import { useAppDispatch, useAppSelector } from '../../redux/Store'
 import './Conversation.scss'
+import axios from 'axios'
+import { setCurrentMessage } from '../../redux/CurentChatSlice'
+
 
 interface Props {
   friendId: string,
@@ -15,16 +18,29 @@ interface Props {
 const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Props) => {
   const dispatch = useAppDispatch()
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
+  const currentChatId: string = useAppSelector((state) => state.currentChat.chatId)
+
   const friend = {
     idUser: friendId,
     name: name,
     avatar: avatar
   }
-  console.log("id", chats)
-
+  const getMessage = async (chatid) => {
+    const data = {
+      chatId: chatid
+    }
+    await axios.post('http://localhost:3000/getMessageByChatId', data)
+      .then((res) => {
+        dispatch(setCurrentMessage(res.data.data))
+      })
+      .catch(() => {
+        console.log('Error when get message')
+      })
+  }
   const setCurrentChatID = () => {
         dispatch(setCurrentReceiver(friend))
         dispatch(setCurrentChatId(chats.id))
+        getMessage(chats.id)
   }
 
   return (
@@ -35,8 +51,8 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
           }}>
       <img src={avatar} alt='avatar-user' />
       <div className="conversation-info">
-        <h4>{name}</h4>
-        <p>{chats.lastMessage}</p>
+        <h4 style={{fontSize:17, marginLeft:-10, color:"black"}}>{name}</h4>
+        <p style={{color:'black'}}>{chats.lastMessage}</p>
       </div>
       <div className="time-wrapper">
         <p className='time'>12:34</p>

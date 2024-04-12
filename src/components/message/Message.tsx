@@ -1,6 +1,19 @@
 import './Message.scss'
 import { useAppSelector } from '../../redux/Store'
 import { FriendInterface } from '../../interface/Interface'
+import excel from '../../assets/logo-excel.png'
+import pdf from '../../assets/logo-pdf.png'
+import word from '../../assets/logo-word.png'
+import ppt from '../../assets/logo-ppt.png'
+import { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEllipsis, faTrashAlt, faShare  } from '@fortawesome/free-solid-svg-icons'
+import Modal from 'react-modal';
+import axios from 'axios'
+import { setCurrentMessage } from '../../redux/CurentChatSlice'
+import { useDispatch } from 'react-redux'
+import { useAppDispatch } from '../../redux/Store'
+import { setCurrentChatId } from '../../redux/CurentChatSlice'
 
 interface Props {
   message: {}
@@ -10,6 +23,53 @@ const Message = ({message}: Props) => {
 
   const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
   const user : FriendInterface = useAppSelector((state) => state.user.userInfo)
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch()
+  const currentChatId = useAppSelector((state) => state.currentChat.chatId)
+
+
+  // Hàm mở modal
+  const showModal = (b) => {
+    setIsModalVisible(b);
+  };
+
+  // Hàm đóng modal
+  const handleDelete = async () => {
+    const data={
+      messageId: message._id,
+      chatId: message.chatId,
+      receiverId: message.receiverId
+    }
+    console.log(data)
+    await axios.post('http://localhost:3000/deleteMessageById', data).then((res) => {
+      getMessage()
+      showModal(false)
+    })
+    // Xử lý khi click vào tùy chọn Xóa
+    setIsModalVisible(false); // Đóng modal sau khi thực hiện xóa
+  };
+  const getMessage = async () => {
+    const data = {
+      chatId: currentChatId
+    }
+    await axios.post('http://localhost:3000/getMessageByChatId', data)
+      .then((res) => {
+        dispatch(setCurrentMessage(res.data.data))
+      })
+      .catch(() => {
+        console.log('Error when get message')
+      })
+  }
+
+
+  // Hàm xử lý khi click vào tùy chọn Chuyển tiếp tin nhắn
+  const handleForward = () => {
+    // Xử lý khi click vào tùy chọn Chuyển tiếp tin nhắn
+    setIsModalVisible(false); // Đóng modal sau khi thực hiện chuyển tiếp
+  };
+
+
   let info 
   let messageClass
   let formattedDate
@@ -27,6 +87,7 @@ else{
   formattedDate="Đang gửi..."
 }
   let messageContent: JSX.Element | null = null;
+  let fileIcon: JSX.Element | null = null;
   if(user.idUser === message.user.idUser){
     info = user
     messageClass = 'user-message'
@@ -46,7 +107,24 @@ else{
       messageContent = <video src={message.video} controls className="message-video" />;
       break;
       case 'file':
-      messageContent = <a href={message.file}>{message.text}</a>
+      if(message.text.includes('.pdf')){
+        fileIcon = <img src={pdf}  className='file-icon'/>
+      }
+      else if(message.text.includes('.docx')||message.text.includes('.doc')){
+        fileIcon = <img src={word}  className='file-icon'/>
+      }
+      else if(message.text.includes('.xlsx')||message.text.includes('.xls')){
+        fileIcon = <img src={excel}  className='file-icon'/>
+      }
+      else if(message.text.includes('.pptx')||message.text.includes('.ppt')){
+        fileIcon = <img src={ppt}  className='file-icon'/>
+      }
+      messageContent = <div className='file-show'>
+        {fileIcon}
+        <a href={message.file} className='link-file'>{message.text}</a>
+      </div>
+      
+     
         break;
     
     default:
@@ -55,17 +133,35 @@ else{
 
 
   return (
-    <div className={`message-wrapper ${messageClass}`}>
+   <div>
+     <div className={`message-wrapper ${messageClass}`}>
         <img src={info.avatar} alt="avatar-user" className='user-image' />
         <div className="message-info">
             <div className="mc-header">
                 <h4>{info.name}</h4>
                 <p>{formattedDate}</p>
+                <div className='btnOption' onClick={()=>{
+                  showModal(!isModalVisible)
+                }}><FontAwesomeIcon icon={faEllipsis} /></div>
             </div>
             {messageContent}
-
         </div>
+        
     </div>
+    <Modal
+        isOpen={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+        contentLabel="tùy chọn"
+        className="modal"
+      >
+        <div>
+          <div className="btn" onClick={handleForward}><FontAwesomeIcon icon={faShare} /> Chuyển tiếp</div>
+          <div className="btn" onClick={handleDelete}><FontAwesomeIcon icon={faTrashAlt} /> Xóa</div>
+        </div>
+        <button className='btnClose' onClick={() => setIsModalVisible(false)}>Đóng</button>
+      </Modal>
+   </div>
+    
   )
 }
 
