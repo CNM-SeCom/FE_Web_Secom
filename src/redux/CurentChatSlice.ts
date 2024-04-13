@@ -7,6 +7,8 @@ interface CurrentChatState {
     receiver: FriendInterface,
     messages: MessageInterface[]
     currentTyping: boolean
+    listChat: []
+    currentChatType: string
 }
 
 const initialState: CurrentChatState = {
@@ -17,7 +19,9 @@ const initialState: CurrentChatState = {
         name: '',
     },
     messages: [],
-    currentTyping: false
+    currentTyping: false,
+    listChat: [],
+    currentChatType: 'single'
 }
 
 const CurrentChatSlice = createSlice({
@@ -35,9 +39,15 @@ const CurrentChatSlice = createSlice({
         },
         setCurrentTyping: (state, action: PayloadAction<boolean>) => {
             state.currentTyping = action.payload
+        },
+        setListChat: (state, action: PayloadAction<[]>) => {
+            state.listChat = action.payload
+        },
+        setCurrentChatType: (state, action: PayloadAction<string>) => {
+            state.currentChatType = action.payload
         }
     }
 })
 
 export default CurrentChatSlice.reducer
-export const { setCurrentChatId, setCurrentReceiver, setCurrentMessage, setCurrentTyping } = CurrentChatSlice.actions
+export const { setCurrentChatId, setCurrentReceiver, setCurrentMessage, setCurrentTyping, setListChat, setCurrentChatType } = CurrentChatSlice.actions

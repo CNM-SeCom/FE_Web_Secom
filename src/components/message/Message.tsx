@@ -17,9 +17,10 @@ import { setCurrentChatId } from '../../redux/CurentChatSlice'
 
 interface Props {
   message: {}
+  chatType: string
 }
 
-const Message = ({message}: Props) => {
+const Message = ({message, chatType}: Props) => {
 
   const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
   const user : FriendInterface = useAppSelector((state) => state.user.userInfo)
@@ -93,7 +94,7 @@ else{
     messageClass = 'user-message'
   }
   else{
-    info = receiver
+   info = message.user
     messageClass = 'receiver-message'
   }
   switch (message.type) {

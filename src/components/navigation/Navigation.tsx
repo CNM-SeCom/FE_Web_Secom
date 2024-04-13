@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/Store'
 import { useNavigate } from 'react-router-dom'
 import { changeLoginState } from '../../redux/LoginSlice'
 import axios from 'axios'
+import { setCurrentChatId, setCurrentMessage, setCurrentReceiver } from '../../redux/CurentChatSlice'
 
 enum NavItem {
   HOME = 0,
@@ -32,6 +33,9 @@ const Navigation = () => {
     // console.log(res)
 
     if(res.status == 200) {
+      dispatch(setCurrentChatId(''))
+      dispatch(setCurrentMessage([]))
+      dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
       dispatch(changeLoginState(false))
       navigate('/welcome')
     }

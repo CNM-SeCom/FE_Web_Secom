@@ -8,28 +8,38 @@
         
 
         .mh-left {
-            width: 12.5%;
+            width: 40%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             .name-user{
-                color:black
+                color:black;
+                font-size: 20px;
+                font-weight: 700;
+                width: 80%;
+                
             }
             img {
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
                 margin-left: 10px;
+                margin-right: 20px;
             }
         }
 
         .mh-right {
-            width: 16%;
+            width: 25%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             .btnCall{
-                background-color: 'black';
+                
+                background-color: blue;
+                margin: 10px;
+            }
+            .btnInfo{
+                background-color: blue;
                 margin: 10px;
             }
 

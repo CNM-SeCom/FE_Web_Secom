@@ -7,9 +7,10 @@ import { FriendInterface } from '../../interface/Interface'
 import { useEffect, useState, useRef } from 'react'
 import { useAppDispatch } from '../../redux/Store'
 import axios from 'axios'
-import { setCurrentMessage } from '../../redux/CurentChatSlice'
+import { setCurrentMessage, setCurrentTyping } from '../../redux/CurentChatSlice'
 import Loading from '../loading/Loading'
-import { faPaperclip, faCancel, faVideo, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faPaperclip, faCancel, faVideo, faPhone, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 interface Message {
   user: string;
@@ -22,8 +23,10 @@ const Messages = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
+  const userId = useAppSelector((state) => state.user.userInfo.idUser)
   const currentReceiverId = useAppSelector((state) => state.currentChat.receiver.idUser)
   const currentChatId = useAppSelector((state) => state.currentChat.chatId)
+  const currentChatType = useAppSelector((state) => state.currentChat.currentChatType)
   let messagesCurrent = useAppSelector((state) => state.currentChat.messages)
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.user.userInfo)
@@ -31,11 +34,43 @@ const Messages = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [typing, setTyping] = useState(false)
-  const [typingText, setTypingText] = useState("")
   const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
-
-
-  useEffect(() => {}, [currentTyping])
+  useEffect(() => {
+    let socket: WebSocket | undefined;
+    if (currentChatType === 'group') {
+      socket = new WebSocket(`ws://localhost:3001/?idUser=${currentChatId}`);
+      socket.addEventListener('open', function (event) {
+        console.log("Connected to server group...");
+      });
+      socket.addEventListener('message', function (event) {
+        const data = JSON.parse(event.data);
+        if (data.type === "RELOAD_MESSAGE") {
+          if (data.chatId === currentChatId) {
+            getMessage()
+          }
+        } else
+          if (data.type === "text" || data.type === "video" || data.type === "image" || data.type === "file") {
+           if(userId !== data.user.idUser){
+            toast(data.user.name + ": " + data.text);
+            if (receiver.idUser !== '' && receiver.idUser === data.chatId) { 
+              const newMessages = [...messagesCurrent, data]
+              dispatch(setCurrentMessage(newMessages))
+            } 
+           }
+          }
+          else if (data.type === "TYPING") {
+            if(userId !== data.user.idUser){
+            if (receiver !== null && currentChatId === data.chatId) {
+              dispatch(setCurrentTyping(data.typing))
+            }
+          }
+    
+          }
+    
+      });
+    }
+  }, [currentChatType, currentChatId]);
+  useEffect(() => { }, [currentTyping])
 
   const getMessage = async () => {
     const data = {
@@ -58,8 +93,7 @@ const Messages = () => {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messagesCurrent, currentTyping]);
-  useEffect(() => {}, [typing]);
-
+  useEffect(() => { }, [typing]);
 
   const sendMessage = async () => {
     let data = {}
@@ -204,7 +238,6 @@ const Messages = () => {
       const newMessagesHasId = [...messagesCurrent, res.data.data]
       dispatch(setCurrentMessage(newMessagesHasId))
       setLoadingSend(false)
-
     }).catch(() => {
       console.log('Error when send message')
       setLoadingSend(false)
@@ -257,20 +290,23 @@ const Messages = () => {
           <h4 className='name-user'>{receiver.name}</h4>
         </div>
         <div className="mh-right">
-            <button className='btnCall'>
-              <FontAwesomeIcon icon={faPhone} />
-            </button>
-            <button className='btnCall'>
-              <FontAwesomeIcon icon={faVideo} />
-            </button>
-          </div>
+          <button className='btnCall'>
+            <FontAwesomeIcon icon={faPhone} />
+          </button>
+          <button className='btnCall'>
+            <FontAwesomeIcon icon={faVideo} />
+          </button>
+          <button className='btnCall'>
+            <FontAwesomeIcon icon={faEllipsisV} />
+          </button>
+        </div>
       </div>
       <hr />
       <div className="chat-content-wrapper" ref={messagesContainerRef}>
         {messagesCurrent.map((message, index) => (
-          <Message key={index} message={message} />
+          <Message key={index} message={message} chatType={currentChatType} />
         ))}
-        {!currentTyping ? null : <p style={{color: 'gray', marginLeft:10}}>Đang soạn tin nhắn...</p>}
+        {!currentTyping ? null : <p style={{ color: 'gray', marginLeft: 10 }}>Đang soạn tin nhắn...</p>}
       </div>
       <hr />
       <div className="input-message-wrapper">
@@ -280,10 +316,12 @@ const Messages = () => {
 
           </div>)
             :
-            (<div><input type="text" value={txtMessage} placeholder='Nhập để gửi tin nhắn...' onFocus={()=>{
-              sendTyping(true)}} onBlur={()=>{
-              
-                sendTyping(false)}} onChange={(e) => setTxtMessage(e.target.value)} onKeyDown={handleKeyDown} /></div>)
+            (<div><input type="text" value={txtMessage} placeholder='Nhập để gửi tin nhắn...' onFocus={() => {
+              sendTyping(true)
+            }} onBlur={() => {
+
+              sendTyping(false)
+            }} onChange={(e) => setTxtMessage(e.target.value)} onKeyDown={handleKeyDown} /></div>)
 
         }
         <div className='btnChooseFile'>
