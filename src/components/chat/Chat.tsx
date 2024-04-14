@@ -32,8 +32,9 @@ const Chat = () => {
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
 
   const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
-  const currentMessage = useAppSelector((state) => state.currentChat.messages)
+
   const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
+  const currentChatType = useAppSelector((state) => state.currentChat.currentChatType)
   const currentChatId = useAppSelector((state) => state.currentChat.chatId)
   const [openModalCreateGroup, setOpenModalCreateGroup] = useState(false)
   const [isCreateGroup, setIsCreateGroup] = useState(true)
@@ -41,6 +42,7 @@ const Chat = () => {
   const [selectedUsers, setSelectedUsers] = useState<FriendInterface[]>([]);
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const [groupName, setGroupName] = useState('Nhóm của ' + user.name);
+  const currentMessage = useAppSelector((state) => state.currentChat.messages)
   let listF = user.listFriend
   const showModalCreateGroup = () => {
     setOpenModalCreateGroup(true)
@@ -53,7 +55,7 @@ const Chat = () => {
     console.log("Connected to server")
   });
   //on message event
-  socket.addEventListener('message', function (event) {
+  socket.addEventListener('message', async function (event) {
     
     const data = JSON.parse(event.data)
     if (data.type === "RELOAD_MESSAGE") {
@@ -63,22 +65,32 @@ const Chat = () => {
     } else
       if (data.type === "text" || data.type === "video" || data.type === "image" || data.type === "file") {
         getConversation()
-        toast(data.user.name + ": " + data.text);
-        if (receiver.idUser !== '' && receiver.idUser === data.user.idUser) { 
-          const newMessages = [...currentMessage, data]
-          dispatch(setCurrentMessage(newMessages))
-         
+        
+        if (currentChatType==='single'&&receiver.idUser !== '' && receiver.idUser === data.user.idUser) { 
+          dispatch(setCurrentMessage([...currentMessage, data]))
+          toast(data.user.name + ": " + data.text);
+        }
+        else if(currentChatType==='group'&&currentChatId===data.chatId&&userId!==data.user.idUser){
+          dispatch(setCurrentMessage([...currentMessage, data]))
+          toast(data.user.name + ": " + data.text);
         }
       }
       else if (data.type === "TYPING") {
-        if (receiver !== null && currentChatId === data.chatId) {
+        if (receiver !== null && currentChatId === data.chatId&&userId!==data.userId) {
           dispatch(setCurrentTyping(data.typing))
         }
 
       }
+      else if(data.type==="RELOAD_CONNVERSATION"){
+        getConversation()
+      }
+      else if(data.type==="GROUP_MESSAGE"){
+        getConversation()
+        toast(data.groupName + ": có 1 tin nhắn mới trong nhóm" );
+      }
 
   });
-  },[])
+  },[currentMessage])
   const getMessage = async () => {
     const data = {
       chatId: currentChatId
@@ -142,6 +154,8 @@ const Chat = () => {
       setIsCreateGroup(false)
     }
   }, [selectedCount])
+  useEffect(() => {},[currentMessage])
+  
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const userId = event.target.value;
     const isChecked = event.target.checked;
@@ -211,7 +225,7 @@ const Chat = () => {
       {openChat &&
         <div className="conversations-wrapper">
           <div className="conversations-header">
-            <h4 style={{ color: 'black' }}>Tin nhắn: {chats.length}</h4>
+            <h4 style={{ color: 'black' }}>Đoạn chat: {chats.length}</h4>
 
             <button>Tin nhắn mới</button>
             {/* <button onClick={() => {setOpenChat(false)}}>!</button> */}
@@ -223,6 +237,7 @@ const Chat = () => {
           </div>
           <hr />
           <button className='btnCreateGroup' onClick={showModalCreateGroup}>Tạo nhóm</button>
+          <div style={{height:'100%',width:'100%', overflowY:'auto'}}>
           {
             chats.map((c) => {
               {
@@ -248,6 +263,7 @@ const Chat = () => {
               )
             })
           }
+            </div>
           <div>
           </div>
 
@@ -259,9 +275,10 @@ const Chat = () => {
         isOpen={openModalCreateGroup}
         onRequestClose={() => setOpenModalCreateGroup(false)}
         contentLabel="tùy chọn"
-        className="modal"
+        className="modal-create-group"
+        style={{ overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)' } }}
       >
-        <h2 style={{ color: 'blue' }}>Tạo nhóm</h2>
+        <h2 style={{ color: 'blue'}}>Tạo nhóm</h2>
 
         <div style={{ display: 'flex' }}>
           <img src="https://res.cloudinary.com/dekjrisqs/image/upload/v1712977627/vljmvybzv0orkqwej1tf.png" alt='avatar-user' style={{ height: 50, width: 50, borderRadius: 50 }} />

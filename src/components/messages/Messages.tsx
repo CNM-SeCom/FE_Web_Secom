@@ -10,7 +10,9 @@ import axios from 'axios'
 import { setCurrentMessage, setCurrentTyping } from '../../redux/CurentChatSlice'
 import Loading from '../loading/Loading'
 import { faPaperclip, faCancel, faVideo, faPhone, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-import { toast } from 'react-toastify';
+
+import Modal from 'react-modal'
+
 
 interface Message {
   user: string;
@@ -27,7 +29,8 @@ const Messages = () => {
   const currentReceiverId = useAppSelector((state) => state.currentChat.receiver.idUser)
   const currentChatId = useAppSelector((state) => state.currentChat.chatId)
   const currentChatType = useAppSelector((state) => state.currentChat.currentChatType)
-  let messagesCurrent = useAppSelector((state) => state.currentChat.messages)
+  const messagesCurrent = useAppSelector((state) => state.currentChat.messages)
+  const listParticipant = useAppSelector((state) => state.currentChat.listParticipant)
   const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state.user.userInfo)
   const [loadingSend, setLoadingSend] = useState(false)
@@ -35,42 +38,9 @@ const Messages = () => {
   const [file, setFile] = useState<File | null>(null);
   const [typing, setTyping] = useState(false)
   const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
-  useEffect(() => {
-    let socket: WebSocket | undefined;
-    if (currentChatType === 'group') {
-      socket = new WebSocket(`ws://localhost:3001/?idUser=${currentChatId}`);
-      socket.addEventListener('open', function (event) {
-        console.log("Connected to server group...");
-      });
-      socket.addEventListener('message', function (event) {
-        const data = JSON.parse(event.data);
-        if (data.type === "RELOAD_MESSAGE") {
-          if (data.chatId === currentChatId) {
-            getMessage()
-          }
-        } else
-          if (data.type === "text" || data.type === "video" || data.type === "image" || data.type === "file") {
-           if(userId !== data.user.idUser){
-            toast(data.user.name + ": " + data.text);
-            if (receiver.idUser !== '' && receiver.idUser === data.chatId) { 
-              const newMessages = [...messagesCurrent, data]
-              dispatch(setCurrentMessage(newMessages))
-            } 
-           }
-          }
-          else if (data.type === "TYPING") {
-            if(userId !== data.user.idUser){
-            if (receiver !== null && currentChatId === data.chatId) {
-              dispatch(setCurrentTyping(data.typing))
-            }
-          }
-    
-          }
-    
-      });
-    }
-  }, [currentChatType, currentChatId]);
   useEffect(() => { }, [currentTyping])
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
 
   const getMessage = async () => {
     const data = {
@@ -85,15 +55,13 @@ const Messages = () => {
       })
   }
   useEffect(() => {
-    getMessage();
-  }, []);
-  useEffect(() => {
     // Scroll to the bottom when messages change
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messagesCurrent, currentTyping]);
   useEffect(() => { }, [typing]);
+  useEffect(() => {},[messagesCurrent])
 
   const sendMessage = async () => {
     let data = {}
@@ -101,6 +69,7 @@ const Messages = () => {
       const formData = new FormData();
       formData.append('file', file);
       data = {
+        listReceiver: listParticipant,
         message: {
           receiverId: currentReceiverId,
           user: {
@@ -110,7 +79,7 @@ const Messages = () => {
           },
           text: '',
           type: "image",
-          chatId: currentChatId,
+          chatId: currentChatId, 
         }
       }
       const newMessages = [...messagesCurrent, data.message]
@@ -118,6 +87,7 @@ const Messages = () => {
       await axios.post('http://localhost:3000/uploadImageMessageWeb', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
 
         data = {
+          listReceiver: listParticipant,
           message: {
             receiverId: currentReceiverId,
             user: {
@@ -137,6 +107,7 @@ const Messages = () => {
       const formData = new FormData();
       formData.append('file', file);
       data = {
+        listReceiver: listParticipant,
         message: {
           receiverId: currentReceiverId,
           user: {
@@ -154,6 +125,7 @@ const Messages = () => {
       await axios.post('http://localhost:3000/cloudinary/uploadVideoWeb', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
         console.log(res.data.url)
         data = {
+          listReceiver: listParticipant,
           message: {
             receiverId: currentReceiverId,
             user: {
@@ -173,6 +145,7 @@ const Messages = () => {
       const formData = new FormData();
       formData.append('file', file);
       data = {
+        listReceiver: listParticipant,
         message: {
           receiverId: currentReceiverId,
           user: {
@@ -192,6 +165,7 @@ const Messages = () => {
       await axios.post('http://localhost:3000/uploadFile', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
         .then((res) => {
           data = {
+            listReceiver: listParticipant,
             message: {
               receiverId: currentReceiverId,
               user: {
@@ -213,6 +187,7 @@ const Messages = () => {
     }
     else {
       data = {
+        listReceiver: listParticipant,
         message: {
           receiverId: currentReceiverId,
           user: {
@@ -228,28 +203,47 @@ const Messages = () => {
       }
     }
     setLoadingSend(true)
+    
     const newMessages = [...messagesCurrent, data.message]
     dispatch(setCurrentMessage(newMessages))
+    setFile(null)
     setTxtMessage('')
-    await axios.post('http://localhost:3000/ws/send-message-to-user', data).then((res) => {
-      //xóa đi data.message trong mảng messagesCurrent
-      const newMessagesWithoutData = messagesCurrent.filter((message) => message !== data.message);
-      dispatch(setCurrentMessage(newMessagesWithoutData));
-      const newMessagesHasId = [...messagesCurrent, res.data.data]
-      dispatch(setCurrentMessage(newMessagesHasId))
-      setLoadingSend(false)
-    }).catch(() => {
-      console.log('Error when send message')
-      setLoadingSend(false)
-    })
-
+    if(currentChatType==='single'){
+      await axios.post('http://localhost:3000/ws/send-message-to-user', data).then((res) => {
+        //xóa đi data.message trong mảng messagesCurrent
+        const newMessagesWithoutData = messagesCurrent.filter((message) => message !== data.message);
+        dispatch(setCurrentMessage(newMessagesWithoutData));
+        const newMessagesHasId = [...messagesCurrent, res.data.data]
+        dispatch(setCurrentMessage(newMessagesHasId))
+        setLoadingSend(false)
+      }).catch(() => {
+        console.log('Error when send message')
+        setLoadingSend(false)
+      })
+    }
+    else{
+      await axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, data).then((res) => {
+        //xóa đi data.message trong mảng messagesCurrent
+        const newMessagesWithoutData = messagesCurrent.filter((message) => message !== data.message);
+        dispatch(setCurrentMessage(newMessagesWithoutData));
+        const newMessagesHasId = [...messagesCurrent, res.data.data]
+        dispatch(setCurrentMessage(newMessagesHasId))
+        setLoadingSend(false)
+      }).catch(() => {
+        console.log('Error when send message')
+        setLoadingSend(false)
+      })
+    }
+    
   }
 
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      sendMessage();
+      if(txtMessage){
+        sendMessage();
+      }
     }
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -259,16 +253,32 @@ const Messages = () => {
     }
   };
   const sendTyping = async (b) => {
-    const data = {
-      chatId: currentChatId,
-      typing: b,
-      receiverId: currentReceiverId
+    if(currentChatType==='single'){
+      const data = {
+        chatId: currentChatId,
+        typing: b,
+        receiverId: currentReceiverId,
+        userId: userId
+      }
+      await axios.post('http://localhost:3000/ws/sendTypingToUser', data).then(() => {
+        console.log('Send typing')
+      }).catch(() => {
+        console.log('Error when send typing')
+      })
     }
-    await axios.post('http://localhost:3000/ws/sendTypingToUser', data).then(() => {
-      console.log('Send typing')
-    }).catch(() => {
-      console.log('Error when send typing')
-    })
+    else{
+      const data = {
+        chatId: currentChatId,
+        typing: b,
+        listReceiver: listParticipant,
+        userId: userId
+      }
+      await axios.post('http://localhost:3000/ws/sendTypingToGroup', data).then(() => {
+        console.log('Send typing')
+      }).catch(() => {
+        console.log('Error when send typing')
+      })
+    }
   }
 
   const handleButtonClick = () => {
@@ -296,7 +306,9 @@ const Messages = () => {
           <button className='btnCall'>
             <FontAwesomeIcon icon={faVideo} />
           </button>
-          <button className='btnCall'>
+          <button className='btnCall' onClick={()=>{
+            setIsModalVisible(true)
+          }}>
             <FontAwesomeIcon icon={faEllipsisV} />
           </button>
         </div>
@@ -336,10 +348,61 @@ const Messages = () => {
           <button onClick={handleButtonClick}>{!file ? (<FontAwesomeIcon icon={faPaperclip} />) : (<FontAwesomeIcon icon={faCancel} />)}</button>
         </div>
         <div className='btnSendMessage'>
-          <button onClick={sendMessage}>Gửi</button>
+          <button onClick={()=>{
+            if(txtMessage ||file){
+              sendMessage()
+            }
+            
+          }}>Gửi</button>
         </div>
 
       </div>
+      <Modal
+        isOpen={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+        contentLabel="tùy chọn"
+        className="modal-group-option"
+        style={{
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)'
+          },
+          content: {
+            width: 550,
+            height: '90%',
+            margin: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            background: 'white',
+            color: 'black',
+            borderRadius: '10px',
+            padding: '10px',
+            border: 'none',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)'
+          }
+        
+        }}
+      >
+          <div className='avtGroup'>
+            {currentChatType==='group'?
+            <img src={receiver.avatar}  alt="avatar-user" style={{height:80, width:80, padding: 10}}/>
+            :null}
+          </div>
+          <div className='nameGroup'>
+            {currentChatType==='group'?
+            <p style={{height:80, width:80, padding: 10}}>{receiver.name}</p>
+            :null}
+          </div>
+   
+        <button className='btnClose' onClick={() => setIsModalVisible(false)} 
+          style={{
+            fontSize: 20,
+            color: 'white',
+            backgroundColor: '#1CA1C1',
+          }}
+        >Đóng</button>
+      </Modal>
     </div>
   )
 }
