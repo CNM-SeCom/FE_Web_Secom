@@ -126,7 +126,7 @@
         width: auto;
         display: flex;
         flex-direction: column;
-        background-color: #4d65c8;
+        background-color: #64bad0;
         padding: 10px;
         border-radius: 10px;
 
@@ -151,4 +151,14 @@
             word-wrap: break-word;
         }
     }
+  }
+  .message-notify{
+    max-width: 450px;
+    margin-top: 10px;
+    color: black;
+    //xuống dòng khi dài quá
+    white-space: pre-line;
+    word-wrap: break-word;
+    font-weight: 'bold';
+    font-style: italic;
   }

@@ -9,7 +9,9 @@ interface CurrentChatState {
     currentTyping: boolean
     listChat: []
     currentChatType: string
-    listParticipant: []
+    listParticipant: [],
+    groupName: string,
+    avatarGroup: string
 }
 
 const initialState: CurrentChatState = {
@@ -23,7 +25,9 @@ const initialState: CurrentChatState = {
     currentTyping: false,
     listChat: [],
     currentChatType: 'single',
-    listParticipant: []
+    listParticipant: [],
+    groupName: '',
+    avatarGroup: ''
 }
 
 const CurrentChatSlice = createSlice({
@@ -50,9 +54,18 @@ const CurrentChatSlice = createSlice({
         },
         setListParticipant: (state, action: PayloadAction<[]>) => {
             state.listParticipant = action.payload
+        },
+        setGroupName: (state, action: PayloadAction<string>) => {
+            state.groupName = action.payload
+        },
+        setAvatarGroup: (state, action: PayloadAction<string>) => {
+            state.avatarGroup = action.payload
         }
     }
 })
 
 export default CurrentChatSlice.reducer
-export const { setCurrentChatId, setCurrentReceiver, setCurrentMessage, setCurrentTyping, setListChat, setCurrentChatType, setListParticipant } = CurrentChatSlice.actions
+export const { setCurrentChatId, setCurrentReceiver, setCurrentMessage, setCurrentTyping, setListChat, 
+    setCurrentChatType, setListParticipant, setGroupName,
+    setAvatarGroup
+} = CurrentChatSlice.actions

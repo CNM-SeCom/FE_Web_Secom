@@ -1,5 +1,5 @@
 import { ChatInterface } from '../../interface/Interface'
-import { setCurrentChatId, setCurrentChatType, setCurrentReceiver, setListParticipant } from '../../redux/CurentChatSlice'
+import { setAvatarGroup, setCurrentChatId, setCurrentChatType, setCurrentReceiver, setGroupName, setListParticipant } from '../../redux/CurentChatSlice'
 import { useAppDispatch, useAppSelector } from '../../redux/Store'
 import './Conversation.scss'
 import axios from 'axios'
@@ -58,8 +58,11 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
         dispatch(setCurrentReceiver(friend))
         dispatch(setCurrentChatId(chats.id))
         dispatch(setCurrentChatType(chats.type))
+        
         if(chats.type==='group'){
           dispatch(setListParticipant(chats.participants))
+          dispatch(setGroupName(chats.groupName))
+          dispatch(setAvatarGroup(chats.avatar))
         }
         else{
           dispatch(setListParticipant([]))

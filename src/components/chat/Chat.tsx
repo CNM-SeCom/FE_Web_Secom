@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { ChatInterface, FriendInterface, MessageInterface, UserInterface } from '../../interface/Interface'
 import { useAppDispatch } from '../../redux/Store'
-import { setCurrentMessage, setCurrentTyping } from '../../redux/CurentChatSlice'
+import { setAvatarGroup, setCurrentMessage, setCurrentReceiver, setCurrentTyping, setGroupName, setListParticipant } from '../../redux/CurentChatSlice'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
@@ -31,7 +31,7 @@ const Chat = () => {
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
 
-  const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
+  let receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
 
   const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
   const currentChatType = useAppSelector((state) => state.currentChat.currentChatType)
@@ -41,12 +41,14 @@ const Chat = () => {
   const [creating, setCreating] = useState(false)
   const [selectedUsers, setSelectedUsers] = useState<FriendInterface[]>([]);
   const [selectedCount, setSelectedCount] = useState<number>(0);
-  const [groupName, setGroupName] = useState('Nhóm của ' + user.name);
+  const [groupName, setGroupName2] = useState('Nhóm của ' + user.name);
   const currentMessage = useAppSelector((state) => state.currentChat.messages)
+  const [tracking, setTracking] = useState(receiver)
   let listF = user.listFriend
   const showModalCreateGroup = () => {
     setOpenModalCreateGroup(true)
   }
+  useEffect(() => {console.log(receiver)},[receiver])
 
   const dispatch = useAppDispatch()
   useEffect(() => {
@@ -81,14 +83,50 @@ const Chat = () => {
         }
 
       }
-      else if(data.type==="RELOAD_CONNVERSATION"){
+      else if(data.type==="RELOAD_CONVERSATION"){
         getConversation()
       }
       else if(data.type==="GROUP_MESSAGE"){
         getConversation()
         toast(data.groupName + ": có 1 tin nhắn mới trong nhóm" );
       }
-
+      else if(data.type==='KICKOUT_MEMBER'||data.type==='ADD_MEMBER'||data.type==='LEAVE_GROUP'||data.type==='SET_ADMIN'||data.type==='DELETE_CHAT'){
+        getConversation()
+        if(data.type==='DELETE_CHAT'&&currentChatId===data.chatId){
+          toast('Nhóm đã bị giải tán')
+          dispatch(setCurrentMessage([]))
+          dispatch(setListParticipant([]))
+          dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
+          dispatch(setCurrentTyping(false))
+        }
+        if(data.type==='KICKOUT_MEMBER'&&userId===data.idKickOut){
+          toast('Bạn đã bị đuổi khỏi nhóm')
+          dispatch(setCurrentMessage([]))
+          dispatch(setListParticipant([]))
+          dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
+          dispatch(setCurrentTyping(false))
+        }
+        if(currentChatType==='group'&&currentChatId===data.chatId&&userId!==data.user.idUser){
+          dispatch(setCurrentMessage([...currentMessage, data]))
+          dispatch(setListParticipant(data.participants))
+          console.log(data.participants)
+          toast(data.user.name + ": " + data.text);
+        }
+      }
+      else if(data.type==='CHANGE_NAME'){
+        getConversation()
+        if(currentChatType==='group'&&currentChatId===data.chatId){
+          toast('Tên nhóm đã được thay đổi')
+          dispatch(setGroupName(data.groupName))
+        }
+      }
+      else if(data.type==='CHANGE_AVATAR'){
+        getConversation()
+        if(currentChatType==='group'&&currentChatId===data.chatId){
+          toast('Ảnh nhóm đã được thay đổi')
+          dispatch(setAvatarGroup(data.avatarGroup))
+        }
+      }
   });
   },[currentMessage])
   const getMessage = async () => {
@@ -204,7 +242,6 @@ const Chat = () => {
     await axios.post('http://localhost:3000/createGroupChat', data)
       .then((res) => {
       setCreating(false)
-        console.log(res.data.data)
         getConversation()
         setOpenModalCreateGroup(false)
         setIsCreateGroup(false)
@@ -215,6 +252,22 @@ const Chat = () => {
         console.log('Error when create chat')
       })
   }
+  const [listSearch, setListSearch] = useState([]); // State lưu trữ danh sách đã lọc
+  useEffect(() => {
+    setListSearch(listF)
+  }, [listF]);
+  // Hàm xử lý sự kiện khi người dùng thay đổi nội dung input
+  const searchName = (name: string) => {
+    if(name===''){
+      setListSearch(listF)
+    }
+    // Lọc danh sách theo tên
+    const filteredList = listF.filter(participant =>
+      participant.name.toLowerCase().includes(name.toLowerCase())
+    );
+    // Cập nhật state listSearch với danh sách đã lọc
+    setListSearch(filteredList);
+  };
 
   return (
 
@@ -278,21 +331,28 @@ const Chat = () => {
         className="modal-create-group"
         style={{ overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)' } }}
       >
-        <h2 style={{ color: 'blue'}}>Tạo nhóm</h2>
+        <div style={{backgroundColor:'#1CA1C1', height:50, justifyContent:'center', alignItems:'center', display:'flex'}}>
+          <h2 style={{ textAlign: 'center', color:'white'}}>Tạo nhóm chat</h2>
+        </div>
 
         <div style={{ display: 'flex' }}>
           <img src="https://res.cloudinary.com/dekjrisqs/image/upload/v1712977627/vljmvybzv0orkqwej1tf.png" alt='avatar-user' style={{ height: 50, width: 50, borderRadius: 50 }} />
           <input type='text' placeholder='Tên nhóm' required style={{
             textAlign: 'left', 
 
-          }} onChange={(e) => setGroupName(e.target.value)} />
+          }} onChange={(e) => setGroupName2(e.target.value)} />
         </div>
         <input
-          
+          type='text'
+          placeholder='Tìm kiếm...'
+          style={{ width: '100%', height: 40, marginTop: 20, marginBottom: 20, textAlign: 'left', border: '1px solid #ccc', borderRadius: 5}}
+          onChange={(e) => {
+            searchName(e.target.value)
+          }}
           />
-        <div style={{ overflowY: 'auto' }}>
+        <div style={{ overflowY: 'auto', height:300}}>
           
-          {listF.map((f) => {
+          {listSearch.map((f) => {
             return (
               <div className='line-friend'>
                 <div className='friend-info'>
@@ -310,7 +370,7 @@ const Chat = () => {
             setIsCreateGroup(false)
             setSelectedCount(0)
             setSelectedUsers([])
-            setGroupName('')
+            setGroupName2('')
             setCreating(false)
             setOpenModalCreateGroup(false) }}>Hủy</button>
           {creating ? <button className={isCreateGroup ? 'btnCreate' : 'btnCreateDisable'} disabled={!isCreateGroup} >Đang tạo nhóm...</button> : <button className={isCreateGroup ? 'btnCreate' : 'btnCreateDisable'} disabled={!isCreateGroup} onClick={createGroupChat}>Tạo nhóm</button>}
