@@ -11,7 +11,7 @@ import { setNameUser, setAvatarUser, setCoverUser, setUser } from '../../redux/U
 const Setting = () => {
   const [avatar, setAvatar] = useState(null) 
   const [coverImage, setCoverImage] = useState(null) 
-  const [name, setName] = useState<string>('') 
+  const [name, setName] = useState('') 
   const navigate = useNavigate()
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
@@ -96,7 +96,7 @@ const Setting = () => {
 
   const handleSubmitName = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-        await axios.post('http://localhost:3000/getListUserByName', {
+        await axios.post('http://localhost:3000/changeProfile', {
             name: name,
         }).then(() => {
             console.log('Change name successfully')
@@ -108,15 +108,9 @@ const Setting = () => {
   }    
 
 useEffect(() => {
-  if(!isLogin) {
-    navigate('/welcome')
-  }
-  if(state != null) {
-    setName(state.name)
-  }
-  else {
-    setName(user.name)
-  }
+  // if(!isLogin) {
+  //   navigate('/welcome')
+  // }
 }, [])
 
   return (

@@ -143,7 +143,7 @@ const Welcome = () => {
                 </label>
                 <label>
                     <span>Mật khẩu</span>
-                    <input type="password" value={password1} onChange={(e) => setPassword1(e.target.value)} />
+                    <input type="password" value={password1} onChange={(e) => setPassword1(e.target.value)} onKeyPress={(e) => {(e.key === 'Enter' ? handleLogin(e) : null)}} />
                 </label>
                 <div className="wrong-info-wrapper">
                     <p className='wrong-info-txt' style={{display: `${block1}`}}>Vui lòng nhập đúng thông tin!</p>

@@ -26,7 +26,7 @@ const handleNameFriend = async (e:  React.ChangeEvent<HTMLInputElement>) =>{
     setName(e.target.value)
 }
 
-const handleSubmitFindUser = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+const handleSubmitFindUser = async (e: React.KeyboardEvent<HTMLInputElement>) => {
   e.preventDefault()
   await axios.post('http://localhost:3000/getListUserByName', {
       name: name,
@@ -50,8 +50,8 @@ const handleSubmitFindUser = async (e: React.MouseEvent<HTMLButtonElement, Mouse
     
         <>
           <div className="search-wrapper">
-            <input type="text" placeholder='Tìm kiếm...' value={name} onChange={(e) => {handleNameFriend(e)}}/>
-            <FontAwesomeIcon className='search-icon' icon={faMagnifyingGlass} onClick={(e) => {handleSubmitFindUser(e)}}/>
+            <input type="text" placeholder='Tìm kiếm...' value={name} onChange={(e) => {handleNameFriend(e)}} onKeyPress={(e) => {(e.key === 'Enter' ? handleSubmitFindUser(e) : null)}}/>
+            <FontAwesomeIcon className='search-icon' icon={faMagnifyingGlass} />
           </div>
 
           {flag && (list.map((item) => <User user={item}/>))}
