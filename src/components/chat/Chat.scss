@@ -1,5 +1,6 @@
 .chat-wrapper {
-    width: 100%;
+    width: 100vw    ;
+    height: 100vh;
     display: flex;
     // justify-content: center;
     
@@ -13,7 +14,6 @@
         
         button{
             width: 50%;
-            
         }
 
         .conversations-header {
@@ -58,6 +58,7 @@
         }
         .btnCreateGroup{
             width: 100%;
+            height:50px;
             background-color: #1CA1C1;
             color: #fff;
             border-radius: 0;
@@ -83,13 +84,16 @@
     margin: 10px;
    align-items: center;
 }
-.modal{
+.modal-create-group{
     justify-content: center;
     align-items: center;
     width: 50%;
     background-color: #ffffff;
     z-index: 1;
     border: 1px solid black;
+    margin: auto;
+    margin-top: 50px;
+    border-radius: 10px;
 }
 .checkBox{
     height: 20px;
@@ -105,6 +109,7 @@
     font-weight: 700;
     padding: 0px 10px;
     margin-bottom: 20px;
+    margin-right: 20px;
 
 }
 .btnClose{
@@ -126,4 +131,5 @@
     font-weight: 700;
     padding: 0px 10px;
     margin-bottom: 20px;
+    margin-right: 20px;
 }

@@ -10,10 +10,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsis, faTrashAlt, faShare  } from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-modal';
 import axios from 'axios'
-import { setCurrentMessage } from '../../redux/CurentChatSlice'
+import { setCurrentChatType, setCurrentMessage } from '../../redux/CurentChatSlice'
 import { useDispatch } from 'react-redux'
-import { useAppDispatch } from '../../redux/Store'
-import { setCurrentChatId } from '../../redux/CurentChatSlice'
+
 
 interface Props {
   message: {}
@@ -25,10 +24,12 @@ const Message = ({message, chatType}: Props) => {
   const receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
   const user : FriendInterface = useAppSelector((state) => state.user.userInfo)
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const currentChatType = useAppSelector((state) => state.currentChat.currentChatType)
+  const listParticipant = useAppSelector((state) => state.currentChat.listParticipant)
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const dispatch = useDispatch()
   const currentChatId = useAppSelector((state) => state.currentChat.chatId)
-
+  const checkMyMessage = user.idUser === message?.user?.idUser
 
   // Hàm mở modal
   const showModal = (b) => {
@@ -37,14 +38,25 @@ const Message = ({message, chatType}: Props) => {
 
   // Hàm đóng modal
   const handleDelete = async () => {
-    const data={
-      messageId: message._id,
-      chatId: message.chatId,
-      receiverId: message.receiverId
+    setLoadingDelete(true);
+    let data;
+    if(currentChatType==='single'){
+      data={
+        messageId: message._id,
+        chatId: message.chatId,
+        receiverId: message.receiverId
+      }
     }
-    console.log(data)
+    else{
+      data={
+        messageId: message._id,
+        chatId: message.chatId,
+        listReceiver: listParticipant
+      }
+    }
     await axios.post('http://localhost:3000/deleteMessageById', data).then((res) => {
       getMessage()
+      setLoadingDelete(false);
       showModal(false)
     })
     // Xử lý khi click vào tùy chọn Xóa
@@ -99,7 +111,7 @@ else{
   }
   switch (message.type) {
     case 'text':
-      messageContent = <p className="message-content">{message.text}</p>;
+      messageContent = <div className="message-content">{message.text}</div>;
       break;
     case 'image':
       messageContent = <img src={message.image} alt="message-image" className="message-image" />;
@@ -153,13 +165,14 @@ else{
         isOpen={isModalVisible}
         onRequestClose={() => setIsModalVisible(false)}
         contentLabel="tùy chọn"
-        className="modal"
+        className="modal-option"
+        style={{ overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)' } }}
       >
         <div>
-          <div className="btn" onClick={handleForward}><FontAwesomeIcon icon={faShare} /> Chuyển tiếp</div>
-          <div className="btn" onClick={handleDelete}><FontAwesomeIcon icon={faTrashAlt} /> Xóa</div>
+          <div className="btn" onClick={handleForward} style={{cursor: 'pointer'}}><FontAwesomeIcon icon={faShare} /> Chuyển tiếp</div>
+          {loadingDelete ? <div className="btn" style={{cursor: 'not-allowed'}}>Đang xóa...</div> : <div className="btn" onClick={handleDelete} style={{cursor: checkMyMessage? 'pointer':'not-allowed'}}><FontAwesomeIcon icon={faTrashAlt} /> Xóa</div>}
         </div>
-        <button className='btnClose' onClick={() => setIsModalVisible(false)}>Đóng</button>
+        <button className='btnClose' onClick={() => setIsModalVisible(false)} style={{backgroundColor:'#1CA1C1', margin: 'auto'}}>Đóng</button>
       </Modal>
    </div>
     

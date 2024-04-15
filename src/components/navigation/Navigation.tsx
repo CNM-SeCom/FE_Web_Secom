@@ -24,6 +24,7 @@ const Navigation = () => {
   const dispatch = useAppDispatch()
   const token: string | null = useAppSelector((state) => state.token.token)
   const user = useAppSelector((state) => state.user.userInfo)
+
   const navigate = useNavigate()
 
   const handleLogout = async () => {
@@ -57,6 +58,7 @@ const Navigation = () => {
       </div> */}
       <div className={`${active == NavItem.CHAT ? 'nav-item active' : 'nav-item'}`} onClick={() => {
           setActive(NavItem.CHAT)
+          dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
           navigate('/chat')
       }}>
         <FontAwesomeIcon className='nav-icon' icon={faComment} />
@@ -64,8 +66,9 @@ const Navigation = () => {
       </div>
       <div className={`${active == NavItem.PROFILE ? 'nav-item active' : 'nav-item'}`} onClick={() => {
         // navigate(`/profile/${user.idUser}`)
+      
         navigate(`/profile`)
-        console.log(NavItem.PROFILE)
+        dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
         setActive(NavItem.PROFILE)
       }}>
         <FontAwesomeIcon className='nav-icon' icon={faUser} />
@@ -84,12 +87,15 @@ const Navigation = () => {
       
       <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => {
         navigate('/setting')
+        dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
         setActive(NavItem.SETTING)
       }}>
         <FontAwesomeIcon className='nav-icon' icon={faGear} />  
         <p>Cài đặt</p>
       </div>    
-      <div className='nav-item' onClick={() => handleLogout()}>
+      <div className='nav-item' onClick={() =>
+        
+        handleLogout()}>
         <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
         <p>Đăng xuất</p>
       </div>    

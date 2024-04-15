@@ -1,5 +1,5 @@
 import { ChatInterface } from '../../interface/Interface'
-import { setCurrentChatId, setCurrentChatType, setCurrentReceiver } from '../../redux/CurentChatSlice'
+import { setCurrentChatId, setCurrentChatType, setCurrentReceiver, setListParticipant } from '../../redux/CurentChatSlice'
 import { useAppDispatch, useAppSelector } from '../../redux/Store'
 import './Conversation.scss'
 import axios from 'axios'
@@ -53,17 +53,24 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
         console.log('Error when get message')
       })
   }
-  const setCurrentChatID = () => {
+  const setCurrentChatID = async () => {
+        dispatch(setCurrentMessage([]))   
         dispatch(setCurrentReceiver(friend))
         dispatch(setCurrentChatId(chats.id))
         dispatch(setCurrentChatType(chats.type))
+        if(chats.type==='group'){
+          dispatch(setListParticipant(chats.participants))
+        }
+        else{
+          dispatch(setListParticipant([]))
+        }
         getMessage(chats.id)
+        
   }
 
   return (
     <div className= "conversation-wrapper"
           onClick={() => {
-            setActive(friendId)
             setCurrentChatID()
           }}>
       <img src={avatar} alt='avatar-user' />
