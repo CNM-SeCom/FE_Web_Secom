@@ -8,7 +8,6 @@ import { useEffect, useState, useRef } from 'react'
 import { useAppDispatch } from '../../redux/Store'
 import axios from 'axios'
 import { setCurrentMessage, setCurrentReceiver, setCurrentTyping, setListParticipant } from '../../redux/CurentChatSlice'
-import Loading from '../loading/Loading'
 import { faPaperclip, faCancel, faVideo, faPhone, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 
 import Modal from 'react-modal'
@@ -31,6 +30,7 @@ const Messages = () => {
   const messagesCurrent = useAppSelector((state) => state.currentChat.messages)
   const listParticipant = useAppSelector((state) => state.currentChat.listParticipant)
   const dispatch = useAppDispatch()
+  const stringeeToken = useAppSelector((state) => state.token.stringeeToken)
   const user = useAppSelector((state) => state.user.userInfo)
   const [loadingSend, setLoadingSend] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -751,6 +751,15 @@ const Messages = () => {
       console.log('Error when change group name')
     })
   }
+  const handleCallVideo =()=>{
+    const stringeeData = {
+      token: stringeeToken,
+      callerId: user.idUser,
+      calleeId: receiver.idUser,
+    }
+    localStorage.setItem('dataCall', JSON.stringify(stringeeData))
+    window.open('/src/components/call/Call.html', '_blank')
+  }
   return (
 
     <div className='messages-wrapper'>
@@ -763,7 +772,7 @@ const Messages = () => {
           <button className='btnCall'>
             <FontAwesomeIcon icon={faPhone} />
           </button>
-          <button className='btnCall'>
+          <button className='btnCall' onClick={handleCallVideo}>
             <FontAwesomeIcon icon={faVideo} />
           </button>
         {currentChatType === 'group' &&
@@ -991,7 +1000,7 @@ const Messages = () => {
                 <div style={{ display: 'flex' }}>
                   <img src={participant.avatar} alt="avatar-user" style={{ height: 40, width: 40, borderRadius: 50 }} />
                   <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <p style={{ marginLeft: 10, fontWeight: 'bold' }}>{participant.name}</p>
+                    <p style={{ marginLeft: 10, fontWeight: 'bold', color: 'black'}}>{participant.name}</p>
                   </div>
                 </div>
                 <div>

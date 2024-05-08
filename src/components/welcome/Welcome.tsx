@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../redux/Store';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { setUser } from '../../redux/UserSlice';
-import { setToken } from '../../redux/TokenSlice';
+import { setToken, setStringeeToken } from '../../redux/TokenSlice';
 import { UserInterface } from '../../interface/Interface';
 import { setPhone } from '../../redux/PhoneSlice';
 
@@ -73,6 +73,13 @@ const Welcome = () => {
                 dispatch(changeLoginState(true))
                 // console.log(res.data.user)
                 setBlock1(Display.NONE)
+                 axios.post('http://localhost:3000/getCallAccessToken', {
+                    userId: res.data.user.idUser,
+                }).then((res) => {
+                    dispatch(setStringeeToken(res.data.data))
+                    console.log("+++++++++++++++++++")
+                    console.log(res.data.data)
+                })
                 navigate('/chat')
                 // console.log(res.data.token.refreshToken, '-', res.data.user.idUser)
                 updateToken(res.data.token.refreshToken, res.data.user.idUser)

@@ -44,6 +44,7 @@ const Chat = () => {
   const [groupName, setGroupName2] = useState('Nhóm của ' + user.name);
   const currentMessage = useAppSelector((state) => state.currentChat.messages)
   const [tracking, setTracking] = useState(receiver)
+  const stringeeToken = useAppSelector((state) => state.token.stringeeToken)
   let listF = user.listFriend
   const showModalCreateGroup = () => {
     setOpenModalCreateGroup(true)
@@ -127,6 +128,12 @@ const Chat = () => {
           dispatch(setAvatarGroup(data.avatarGroup))
         }
       }
+      else if(data.type==='CALL_VIDEO'){
+        const stringeeData = data.data
+        console.log(stringeeData)
+        localStorage.setItem('dataCall', JSON.stringify(stringeeData))
+        window.open('/src/components/call/Call.html', '_blank')
+      }
   });
   },[currentMessage])
   const getMessage = async () => {
@@ -173,12 +180,12 @@ const Chat = () => {
       })
   }
 
-  useEffect(() => {
-    if (!isLogin) {
-      navigate('/welcome')
-    }
-    getConversation()
-  }, [])
+  // useEffect(() => {
+  //   if (!isLogin) {
+  //     navigate('/welcome')
+  //   }
+  //   getConversation()
+  // }, [])
   useEffect(() => {
   }, [currentTyping, currentMessage])
   useEffect(() => {
