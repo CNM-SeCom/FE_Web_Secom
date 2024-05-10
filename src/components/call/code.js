@@ -1,4 +1,6 @@
-function settingCallEvent(call1, localVideo, remoteVideo, callButton, answerCallButton, endCallButton, rejectCallButton) {
+import axios from 'axios';
+
+function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton) {
     call1.on('addremotestream', function (stream) {
         // reset srcObject to work around minor bugs in Chrome and Edge.
         console.log('addremotestream');
@@ -18,12 +20,13 @@ function settingCallEvent(call1, localVideo, remoteVideo, callButton, answerCall
 
         if (state.code === 6 || state.code === 5)//end call or callee rejected
         {
-            callButton.show();
+            // callButton.show();
             endCallButton.hide();
             rejectCallButton.hide();
             answerCallButton.hide();
             localVideo.srcObject = null;
             remoteVideo.srcObject = null;
+            remoteVideo.src = null;
             $('#incoming-call-notice').hide();
         }
     });
@@ -38,11 +41,42 @@ function settingCallEvent(call1, localVideo, remoteVideo, callButton, answerCall
 }
 
 jQuery(function(){
+    function makeCall() {
+        currentCall = new StringeeCall(client, callerId, calleeId, true);
+        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton);
+        remoteVideo.src = "https://res.cloudinary.com/dekjrisqs/video/upload/v1715183781/oc75nvbiljleocfl8hun.mp4"
+        remoteVideo.play();
+        currentCall.makeCall(function(res){
+            console.log('+++ call callback: ', res);
+            if (res.message === 'SUCCESS')
+            {
+                document.dispatchEvent(new Event('connect_ok'));
+                
+               
+            }
+        });
+    }
+  
+    // makeCall()
+    
+    async function notifyCallVideo() {
+        const stringee = localStorage.getItem('dataCall')
+        const data ={
+            receiverId: JSON.parse(stringee).calleeId,
+            callerId:  JSON.parse(stringee).callerId,
+            name: localStorage.getItem('myName') ,
+        }
+        await axios.post('http://localhost:3000/ws/sendNotifyCallVideo', data ).then(res => {
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        }
+        )
+    }
 
     var localVideo = document.getElementById('localVideo');
     var remoteVideo = document.getElementById('remoteVideo');
-    
-    var callButton = $('#callButton');
+    // var callButton = $('#callButton');
     var answerCallButton = $('#answerCallButton');
     var rejectCallButton = $('#rejectCallButton');
     var endCallButton = $('#endCallButton');
@@ -53,6 +87,7 @@ jQuery(function(){
     client.connect(token);
 
     client.on('connect', function(){
+
         console.log('+++ connected!');
     });
 
@@ -63,30 +98,27 @@ jQuery(function(){
     client.on('disconnect', function(res){
         console.log('+++ disconnected');
     });
-
+    if(checkCall){
+        setTimeout(() => {
+            notifyCallVideo()
+            makeCall()
+        }, 500);
+       }
     //MAKE CALL
-    callButton.on('click', function(){
-        currentCall = new StringeeCall(client, callerId, calleeId, true);
-        settingCallEvent(currentCall, localVideo, remoteVideo, callButton, answerCallButton, endCallButton, rejectCallButton);
-
-        currentCall.makeCall(function(res){
-            console.log('+++ call callback: ', res);
-            if (res.message === 'SUCCESS')
-            {
-                document.dispatchEvent(new Event('connect_ok'));
-            }
-        });
+    // callButton.on('click', function(){
+       
+       
         
-    });
+    // });
+
 
     //RECEIVE CALL
     client.on('incomingcall', function(incomingcall){
-
+        
         $('#incoming-call-notice').show();
         currentCall = incomingcall;
-        settingCallEvent(currentCall, localVideo, remoteVideo, callButton, answerCallButton, endCallButton, rejectCallButton);
-
-        callButton.hide();
+        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton);
+        // callButton.hide();
         answerCallButton.show();
         rejectCallButton.show();
         
@@ -97,7 +129,7 @@ jQuery(function(){
         $(this).hide();
         rejectCallButton.hide();
         endCallButton.show();
-        callButton.hide();
+        // callButton.hide();
         console.log('current call ', currentCall, typeof currentCall);
         if (currentCall != null)
         {
@@ -109,6 +141,7 @@ jQuery(function(){
     });
 
     rejectCallButton.on('click', function(){
+        remoteVideo.src = null
         if (currentCall != null)
         {
             currentCall.reject(function(res){
@@ -116,13 +149,14 @@ jQuery(function(){
             });
         }
 
-        callButton.show();
+        // callButton.show();
         $(this).hide();
         answerCallButton.hide();
         
     });
 
     endCallButton.on('click', function(){
+        remoteVideo.src = null
         if (currentCall != null)
         {
             currentCall.hangup(function(res){
@@ -130,7 +164,7 @@ jQuery(function(){
             });
         }
 
-        callButton.show();
+        // callButton.show();
         endCallButton.hide();
         
     });
@@ -139,7 +173,7 @@ jQuery(function(){
 
     //event listener to show and hide the buttons
     document.addEventListener('connect_ok', function(){
-        callButton.hide();
+        // callButton.hide();
         endCallButton.show();
     });
 

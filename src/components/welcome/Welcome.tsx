@@ -77,8 +77,9 @@ const Welcome = () => {
                     userId: res.data.user.idUser,
                 }).then((res) => {
                     dispatch(setStringeeToken(res.data.data))
+                    localStorage.setItem('stringeeToken', res.data.data)
                     console.log("+++++++++++++++++++")
-                    console.log(res.data.data)
+                    
                 })
                 navigate('/chat')
                 // console.log(res.data.token.refreshToken, '-', res.data.user.idUser)

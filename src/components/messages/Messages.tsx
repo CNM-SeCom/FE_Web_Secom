@@ -751,13 +751,32 @@ const Messages = () => {
       console.log('Error when change group name')
     })
   }
+  
   const handleCallVideo =()=>{
     const stringeeData = {
       token: stringeeToken,
       callerId: user.idUser,
       calleeId: receiver.idUser,
+      calleeName: receiver.name,
+      checkCall: true
     }
+    localStorage.setItem('myName', user.name)
     localStorage.setItem('dataCall', JSON.stringify(stringeeData))
+  //   async function notifyCallVideo() {
+  //     const data ={
+  //         receiverId: receiver.idUser,
+  //         callerId:  user.idUser,
+  //         name:  user.name,
+         
+  //     }
+  //     await axios.post('http://localhost:3000/ws/sendNotifyCallVideo', data ).then(res => {
+  //         console.log(res)
+  //     }).catch(err => {
+  //         console.log(err)
+  //     }
+  //     )
+  // }
+  // notifyCallVideo()
     window.open('/src/components/call/Call.html', '_blank')
   }
   return (

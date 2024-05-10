@@ -24,7 +24,7 @@
     "agora-react-uikit": "^1.2.0",
     "agora-rtc-react": "^2.1.0",
     "agora-rtc-sdk-ng": "^4.20.2",
-    "axios": "^1.6.7",
+    "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "firebase": "^10.8.1",
     "react": "^18.2.0",

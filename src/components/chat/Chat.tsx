@@ -30,7 +30,7 @@ const Chat = () => {
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
-
+  const stringeeToken = useAppSelector((state) => state.token.stringeeToken)
   let receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
 
   const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
@@ -44,8 +44,10 @@ const Chat = () => {
   const [groupName, setGroupName2] = useState('Nhóm của ' + user.name);
   const currentMessage = useAppSelector((state) => state.currentChat.messages)
   const [tracking, setTracking] = useState(receiver)
-  const stringeeToken = useAppSelector((state) => state.token.stringeeToken)
+  
+ 
   let listF = user.listFriend
+
   const showModalCreateGroup = () => {
     setOpenModalCreateGroup(true)
   }
@@ -129,9 +131,17 @@ const Chat = () => {
         }
       }
       else if(data.type==='CALL_VIDEO'){
-        const stringeeData = data.data
-        console.log(stringeeData)
-        localStorage.setItem('dataCall', JSON.stringify(stringeeData))
+        const sToken = await localStorage.getItem('stringeeToken')
+        const dataCall = {
+          token: sToken, 
+          callerId: userId,
+          calleeId: data.data,
+          calleeName: data.name,
+          checkCall: false
+        }
+        console.log(dataCall)
+        localStorage.setItem('myName', data.name)
+        localStorage.setItem('dataCall', JSON.stringify(dataCall))
         window.open('/src/components/call/Call.html', '_blank')
       }
   });
