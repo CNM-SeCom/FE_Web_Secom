@@ -190,12 +190,12 @@ const Chat = () => {
       })
   }
 
-  // useEffect(() => {
-  //   if (!isLogin) {
-  //     navigate('/welcome')
-  //   }
-  //   getConversation()
-  // }, [])
+  useEffect(() => {
+    if (!isLogin) {
+      navigate('/welcome')
+    }
+    getConversation()
+  }, [])
   useEffect(() => {
   }, [currentTyping, currentMessage])
   useEffect(() => {
