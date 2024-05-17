@@ -22,8 +22,32 @@ function formatTime(seconds) {
            minutes.toString().padStart(2, '0') + ':' +
            remainingSeconds.toString().padStart(2, '0');
 }
+async function sendMessageCallVideo(text){
+    alert(text)
+    const data = {
+        listReceiver: [JSON.parse(receivedData).callerId, JSON.parse(receivedData).calleeId],
+        message: {
+          receiverId: JSON.parse(receivedData).calleeId,
+          user: {
+            idUser: JSON.parse(receivedData).callerId,
+            name: localStorage.getItem('myName'),
+            avatar: localStorage.getItem('myAvatar')
+          },
+          text: text,
+          type: "video-call",
+          chatId: localStorage.getItem('chatId')
+        }
+      }
+    
+      await axios.post('http://localhost:3000/ws/send-message-call-to-user', data).then((res) => {
+        //xóa đi data.message trong mảng messagesCurren
+      }).catch(() => {
+        console.log('Error when send message')
 
-function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton, currentCall, sendMessageCallVideo) {
+      })
+
+    }
+function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton) {
     call1.on('addremotestream', function (stream) {
         // reset srcObject to work around minor bugs in Chrome and Edge.
        
@@ -39,7 +63,7 @@ function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endC
         localVideo.srcObject = stream;
     });
 
-    call1.on('signalingstate', function (state) {
+    call1.on('signalingstate',async function (state) {
         console.log('signalingstate ', state);
         if(state.code===3){
             callDuration = 0; // Đặt lại biến đếm thời gian
@@ -50,14 +74,13 @@ function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endC
         {
             if (state.code === 6) {
                 clearInterval(callTimer); 
-                sendMessageCallVideo("Cuộc gọi video "+timer)
+                await sendMessageCallVideo("Cuộc gọi video "+timer)
                 console.log("thời gian cuộc gọi: ", timer)
             }
             else if(state.code === 5){
-                sendMessageCallVideo("Cuộc gọi video bị từ chối")
+                await sendMessageCallVideo("Cuộc gọi video bị từ chối")
                 console.log("cuộc gọi bị từ chối")
             }
-            console.log(timer);
             // alert(timer)
             window.close()
             // callButton.show();
@@ -84,51 +107,11 @@ function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endC
 }
 
 jQuery(function () {
-    async function sendMessageCallVideo(text){
-        const data1 = {
-            message: {
-              receiverId: JSON.parse(receivedData).calleeId,
-              user: {
-                idUser: JSON.parse(receivedData).callerId,
-                name: localStorage.getItem('myName'),
-                avatar: localStorage.getItem('myAvatar')
-              },
-              text: text,
-              type: "video-call",
-              chatId: localStorage.getItem('chatId')
-            }
-          }
-         const data2 = {
-            message: {
-              receiverId: JSON.parse(receivedData).callerId,
-              user: {
-                idUser: JSON.parse(receivedData).callerId,
-                name: localStorage.getItem('myName'),
-                avatar: localStorage.getItem('myAvatar')
-              },
-              text: text,
-              type: "video-call",
-              chatId: localStorage.getItem('chatId')
-            }
-          }
-        
-          await axios.post('http://localhost:3000/ws/send-message-to-user', data1).then((res) => {
-            //xóa đi data.message trong mảng messagesCurren
-          }).catch(() => {
-            console.log('Error when send message')
-
-          })
-        //   await axios.post('http://localhost:3000/ws/send-message-to-user', data2).then((res) => {
-        //     //xóa đi data.message trong mảng messagesCurren
-        //   }).catch(() => {
-        //     console.log('Error when send message')
-
-        //   })
-        }
+    
         
     function makeCall() {
         currentCall = new StringeeCall(client, callerId, calleeId, true);
-        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton, currentCall, sendMessageCallVideo);
+        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton);
         remoteVideo.src = "https://res.cloudinary.com/dekjrisqs/video/upload/v1715183781/oc75nvbiljleocfl8hun.mp4"
         remoteVideo.play();
         currentCall.makeCall(function (res) {
@@ -230,7 +213,7 @@ jQuery(function () {
     //RECEIVE CALL
     client.on('incomingcall', function (incomingcall) {
         currentCall = incomingcall;
-        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton, currentCall , sendMessageCallVideo  );
+        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton);
         // callButton.hide();
         answerCallButton.show();
         rejectCallButton.show();
@@ -258,8 +241,7 @@ jQuery(function () {
         if (currentCall != null) {
             currentCall.reject(function (res) {
                 console.log('+++ reject call: ', res)
-                currentCall=null
-                // window.close()
+                window.close()
             });
         }
 
@@ -271,10 +253,10 @@ jQuery(function () {
 
     endCallButton.on('click', function () {
         clearInterval(callTimer); 
-        if(checkAnswer===false){
+        if(checkAnswer===false&&checkCall===true    ){
             sendMessageCallVideo("Cuộc gọi nhỡ")
         }
-        else{
+        else if(checkCall===true){
             sendMessageCallVideo("Cuộc gọi video "+timer)
         }
         
@@ -284,7 +266,7 @@ jQuery(function () {
             currentCall.hangup(function (res) {
                 console.log('+++ hangup: ', res);
                 currentCall = null
-                // window.close()
+                window.close()
             });
         }
 

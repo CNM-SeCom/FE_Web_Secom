@@ -146,8 +146,6 @@ const Chat = () => {
           calleeName: data.name,
           checkCall: false
         }
-      console.log("=============++++++++++++")
-        console.log(dataCall)
         localStorage.setItem('myName', data.name)
         localStorage.setItem('dataCall', JSON.stringify(dataCall))
         window.open('/src/components/call/Call.html', '_blank')

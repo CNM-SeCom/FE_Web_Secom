@@ -7,7 +7,7 @@ import { FriendInterface } from '../../interface/Interface'
 import { useEffect, useState, useRef } from 'react'
 import { useAppDispatch } from '../../redux/Store'
 import axios from 'axios'
-import { setCurrentMessage, setCurrentReceiver, setCurrentTyping, setListParticipant } from '../../redux/CurentChatSlice'
+import { setCurrentMessage, setCurrentReceiver, setCurrentTyping, setGroupName, setListParticipant } from '../../redux/CurentChatSlice'
 import { faPaperclip, faCancel, faVideo, faPhone, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 
 import Modal from 'react-modal'
@@ -51,6 +51,8 @@ const Messages = () => {
   const [loadingSetAdmin, setLoadingSetAdmin] = useState(false)
   const name = useAppSelector((state) => state.currentChat.groupName)
   const [nameGroup, setNameGroup] = useState(name)
+  console.log(name)
+  console.log(nameGroup)
   const [tracking, setTracking] = useState(false)
   const [fileAvatar, setFileAvatar] = useState<File | null>(null)
   const avatarGroup = useAppSelector((state) => state.currentChat.avatarGroup)
@@ -59,7 +61,10 @@ const Messages = () => {
   
 
   useEffect(() => {}, [listParticipant])
-  useEffect(() => {}, [name, avatarGroup])
+  useEffect(() => {setNameGroup(name)}, [name])
+  useEffect(() => {}, [nameGroup])
+  useEffect(() => {}, [avatarGroup])
+
   const getFriend = async () => {
     const data = {
       idUser: user.idUser
@@ -670,9 +675,20 @@ const Messages = () => {
         avatar: memberSelected.avatar,
         role: 'admin'
       }
+      const oldAdmin = {
+        idUser: user.idUser,
+        name: user.name,
+        avatar: user.avatar,
+        role: 'member'
+      }
       const index = listParticipant.findIndex((participant) => participant.idUser === memberSelected.idUser);
+      //bỏ đi admin cũ
+      const adminIndex = listParticipant.findIndex((participant) => participant.idUser === user.idUser)
+
       const updatedListParticipant = [...listParticipant]; // Create a copy of the listParticipant array
-      updatedListParticipant[index] = newAdmin; // Assign the newAdmin object to the corresponding index
+      updatedListParticipant[index] = newAdmin;
+      updatedListParticipant[adminIndex] = oldAdmin;
+       // Assign the newAdmin object to the corresponding index
       dispatch(setListParticipant(updatedListParticipant)); 
       console.log(updatedListParticipant)
       console.log(listParticipant)
@@ -779,13 +795,14 @@ const Messages = () => {
   // notifyCallVideo()
     window.open('/src/components/call/Call.html', '_blank')
   }
+ 
   return (
 
     <div className='messages-wrapper'>
       <div className="messages-header">
         <div className="mh-left">
           <img src={receiver.avatar} alt="avatar-user" />
-          <h4 className='name-user'>{receiver.name}</h4>
+          <h4 className='name-user'>{currentChatType==="group" ? name : receiver.name }</h4>
         </div>
         <div className="mh-right">
           <button className='btnCall'>
@@ -885,7 +902,9 @@ const Messages = () => {
             onChange={handleFileChangeAvatar}
           />
           <img onClick={()=>{
-            handleAvatarClick()
+            if(checkRole()&&checkRole()==='admin'){
+              handleAvatarClick()
+            }
           }} src={avt} alt="avatar-user" style={{ height: 80, width: 80, borderRadius: 50 }} />
         </div>
         <div className='nameGroup' style={{ width: '100%', textAlign: 'center' }}>
