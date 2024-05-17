@@ -164,6 +164,9 @@ const Message = ({ message, chatType }: Props) => {
         <a href={message.file} className='link-file'>{message.text}</a>
       </div>
       break;
+      case 'video-call':
+        messageContent = <div className="message-notify" style={{ color: 'green' }}>{message.text}</div>;
+        break;
     case 'KICKOUT_MEMBER':
       messageContent = <div className="message-notify" style={{ color: 'red' }}>{message.text}</div>;
       break;

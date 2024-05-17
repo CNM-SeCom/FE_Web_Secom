@@ -54,6 +54,8 @@ const Chat = () => {
   useEffect(() => {console.log(receiver)},[receiver])
 
   const dispatch = useAppDispatch()
+  localStorage.setItem('myAvatar', user.avatar)
+  localStorage.setItem('chatId', currentChatId)
   useEffect(() => {
     const socket = new WebSocket(`ws://localhost:3001/?idUser=${userId}`);
   socket.addEventListener('open', function (event) {
@@ -68,7 +70,9 @@ const Chat = () => {
         getMessage()
       }
     } else
-      if (data.type === "text" || data.type === "video" || data.type === "image" || data.type === "file") {
+      if (data.type === "text" || data.type === "video" || data.type === "image" || data.type === "file"||data.type==='video-call') {
+        console.log("ahiahidahsid")
+        console.log(data)
         getConversation()
         
         if (currentChatType==='single'&&receiver.idUser !== '' && receiver.idUser === data.user.idUser) { 
@@ -78,6 +82,9 @@ const Chat = () => {
         else if(currentChatType==='group'&&currentChatId===data.chatId&&userId!==data.user.idUser){
           dispatch(setCurrentMessage([...currentMessage, data]))
           toast(data.user.name + ": " + data.text);
+        }
+        else if (data.type==="video-call" &&currentChatType==='single'&&receiver.idUser !== '') { 
+          dispatch(setCurrentMessage([...currentMessage, data]))
         }
       }
       else if (data.type === "TYPING") {
@@ -139,6 +146,7 @@ const Chat = () => {
           calleeName: data.name,
           checkCall: false
         }
+      console.log("=============++++++++++++")
         console.log(dataCall)
         localStorage.setItem('myName', data.name)
         localStorage.setItem('dataCall', JSON.stringify(dataCall))

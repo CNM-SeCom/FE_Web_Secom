@@ -1,8 +1,8 @@
 import axios from 'axios';
 var callDuration = 0; // Biến đếm thời gian cuộc gọi (giây)
 var callTimer; // Biến interval để cập nhật thời gian
-var timer;
-
+var timer ='00';
+let checkAnswer = false;
 // Hàm cập nhật thời gian gọi
 function updateCallDuration() {
     callDuration++;
@@ -15,17 +15,18 @@ function formatTime(seconds) {
     var hours = Math.floor(seconds / 3600);
     var minutes = Math.floor((seconds % 3600) / 60);
     var remainingSeconds = seconds % 60;
- 
+    console.log(hours.toString().padStart(2, '0') + ':' +
+    minutes.toString().padStart(2, '0') + ':' + 
+    remainingSeconds.toString().padStart(2, '0'))
     return hours.toString().padStart(2, '0') + ':' +
            minutes.toString().padStart(2, '0') + ':' +
            remainingSeconds.toString().padStart(2, '0');
 }
 
-function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton) {
+function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton, currentCall, sendMessageCallVideo) {
     call1.on('addremotestream', function (stream) {
         // reset srcObject to work around minor bugs in Chrome and Edge.
-        callDuration = 0; // Đặt lại biến đếm thời gian
-        callTimer = setInterval(updateCallDuration, 1000); // Bắt đầu interval
+       
         console.log('addremotestream');
         remoteVideo.srcObject = null;
         remoteVideo.srcObject = stream;
@@ -40,10 +41,23 @@ function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endC
 
     call1.on('signalingstate', function (state) {
         console.log('signalingstate ', state);
-
+        if(state.code===3){
+            callDuration = 0; // Đặt lại biến đếm thời gian
+            callTimer = setInterval(updateCallDuration, 1000); 
+            checkAnswer = true
+        }
         if (state.code === 6 || state.code === 5)//end call or callee rejected
         {
-            clearInterval(callTimer); // Dừng interval
+            if (state.code === 6) {
+                clearInterval(callTimer); 
+                sendMessageCallVideo("Cuộc gọi video "+timer)
+                console.log("thời gian cuộc gọi: ", timer)
+            }
+            else if(state.code === 5){
+                sendMessageCallVideo("Cuộc gọi video bị từ chối")
+                console.log("cuộc gọi bị từ chối")
+            }
+            console.log(timer);
             // alert(timer)
             window.close()
             // callButton.show();
@@ -59,6 +73,9 @@ function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endC
 
     call1.on('mediastate', function (state) {
         console.log('mediastate ', state);
+        if(state.code===2){
+            window.close()
+        }
     });
 
     call1.on('info', function (info) {
@@ -67,18 +84,57 @@ function settingCallEvent(call1, localVideo, remoteVideo, answerCallButton, endC
 }
 
 jQuery(function () {
+    async function sendMessageCallVideo(text){
+        const data1 = {
+            message: {
+              receiverId: JSON.parse(receivedData).calleeId,
+              user: {
+                idUser: JSON.parse(receivedData).callerId,
+                name: localStorage.getItem('myName'),
+                avatar: localStorage.getItem('myAvatar')
+              },
+              text: text,
+              type: "video-call",
+              chatId: localStorage.getItem('chatId')
+            }
+          }
+         const data2 = {
+            message: {
+              receiverId: JSON.parse(receivedData).callerId,
+              user: {
+                idUser: JSON.parse(receivedData).callerId,
+                name: localStorage.getItem('myName'),
+                avatar: localStorage.getItem('myAvatar')
+              },
+              text: text,
+              type: "video-call",
+              chatId: localStorage.getItem('chatId')
+            }
+          }
+        
+          await axios.post('http://localhost:3000/ws/send-message-to-user', data1).then((res) => {
+            //xóa đi data.message trong mảng messagesCurren
+          }).catch(() => {
+            console.log('Error when send message')
+
+          })
+        //   await axios.post('http://localhost:3000/ws/send-message-to-user', data2).then((res) => {
+        //     //xóa đi data.message trong mảng messagesCurren
+        //   }).catch(() => {
+        //     console.log('Error when send message')
+
+        //   })
+        }
+        
     function makeCall() {
         currentCall = new StringeeCall(client, callerId, calleeId, true);
-
-        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton);
+        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton, currentCall, sendMessageCallVideo);
         remoteVideo.src = "https://res.cloudinary.com/dekjrisqs/video/upload/v1715183781/oc75nvbiljleocfl8hun.mp4"
         remoteVideo.play();
         currentCall.makeCall(function (res) {
             console.log('+++ call callback: ', res);
             if (res.message === 'SUCCESS') {
                 document.dispatchEvent(new Event('connect_ok'));
-
-
             }
         });
     }
@@ -126,8 +182,9 @@ jQuery(function () {
     });
     if (checkCall) {
         setTimeout(() => {
-            notifyCallVideo()
             makeCall()
+            notifyCallVideo()
+           
         }, 500);
     }
     //    var toggleMicButton = $('#toggleMicButton');
@@ -144,18 +201,18 @@ jQuery(function () {
     // });
 
     // Function to toggle local video
+    let enableCamera = true;
     toggleVideoButton.on('click', function () {
-        var localStream = localVideo.srcObject;
-        if (localStream) {
-            var tracks = localStream.getTracks();
-            tracks.forEach(function (track) {
-                track.enabled = !track.enabled;
-            });
-        }
+        // if (currentCall != null)
+        //     {
+        //         enableCamera = !enableCamera;
+        //        currentCall.enableLocalVideo(enableCamera)
+        //     }
     });
     window.addEventListener('beforeunload', function(event) {
         // Kiểm tra nếu cuộc gọi đang diễn ra
         if (currentCall != null) {
+            clearInterval(callTimer); // Dừng interval
             // Kết thúc cuộc gọi
             currentCall.hangup(function(res) {
                 console.log('+++ hangup: ', res);
@@ -173,7 +230,7 @@ jQuery(function () {
     //RECEIVE CALL
     client.on('incomingcall', function (incomingcall) {
         currentCall = incomingcall;
-        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton);
+        settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton, currentCall , sendMessageCallVideo  );
         // callButton.hide();
         answerCallButton.show();
         rejectCallButton.show();
@@ -196,11 +253,13 @@ jQuery(function () {
     });
 
     rejectCallButton.on('click', function () {
+        
         remoteVideo.src = null
         if (currentCall != null) {
             currentCall.reject(function (res) {
-                console.log('+++ reject call: ', res);
-                window.close()
+                console.log('+++ reject call: ', res)
+                currentCall=null
+                // window.close()
             });
         }
 
@@ -212,12 +271,20 @@ jQuery(function () {
 
     endCallButton.on('click', function () {
         clearInterval(callTimer); 
+        if(checkAnswer===false){
+            sendMessageCallVideo("Cuộc gọi nhỡ")
+        }
+        else{
+            sendMessageCallVideo("Cuộc gọi video "+timer)
+        }
+        
         // alert(timer)
         remoteVideo.src = null
         if (currentCall != null) {
             currentCall.hangup(function (res) {
                 console.log('+++ hangup: ', res);
-                window.close()
+                currentCall = null
+                // window.close()
             });
         }
 
