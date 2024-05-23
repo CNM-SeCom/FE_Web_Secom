@@ -12,8 +12,9 @@ enum NavItem {
   HOME = 0,
   CHAT = 1,
   PROFILE = 2,
-  SETTING = 3,
-  LOG_OUT = 4,
+  FRIENDS = 3,
+  SETTING = 4,
+  LOG_OUT = 5,
 }
 
 const Navigation = () => {
@@ -73,6 +74,17 @@ const Navigation = () => {
         <FontAwesomeIcon className='nav-icon' icon={faUser} />
         <p>Trang cá nhân</p>
       </div>
+
+      <div className={`${active == NavItem.FRIENDS ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+        // navigate(`/profile/${user.idUser}`)
+        navigate(`/friendS`)
+        console.log(NavItem.FRIENDS)
+        setActive(NavItem.FRIENDS)
+      }}>
+        <FontAwesomeIcon className='nav-icon' icon={faUser} />
+        <p>Bạn bè</p>
+      </div>
+      
       <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => {
         navigate('/setting')
         dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
