@@ -34,12 +34,14 @@ const friends = () => {
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
   
-  
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
+
   const getRequestAddFriendByUserId = async () => {
     const body = {
       idUser: userId
     }
-    await axios.post('http://localhost:3000/getRequestAddFriendByUserId', body)
+    await axios.post(`${IP_BACKEND}/getRequestAddFriendByUserId`, body)
+
       .then((res) => {
         setListReqAF(res.data.data)
       })
@@ -52,7 +54,8 @@ const friends = () => {
     const body = {
       idUser: userId
     }
-    await axios.post('http://localhost:3000/getListFriendByUserId', body)
+    await axios.post(`${IP_BACKEND}/getListFriendByUserId`, body)
+
       .then((res) => {
         setListFriends(res.data.data)
         console.log(res.data.data);
@@ -67,7 +70,8 @@ const friends = () => {
     const body = {
       idUser: userId
     }
-    await axios.post('http://localhost:3000/getSentRequestAddFriendByUserId', body)
+    await axios.post(`${IP_BACKEND}/getSentRequestAddFriendByUserId`, body)
+
       .then((res) => {
         setSentListReqAF(res.data.data)
         console.log(res.data.data);
@@ -83,7 +87,8 @@ const friends = () => {
     const body = {
       idUser: userId
     }
-    await axios.post('http://localhost:3000/reloadUser', body)
+    await axios.post(`${IP_BACKEND}/reloadUser`, body)
+
       .then((res) => {
         setUser(res.data.data)
         console.log(res.data.data);

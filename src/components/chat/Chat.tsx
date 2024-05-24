@@ -15,6 +15,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
 
+
 const Chat = () => {
 
 
@@ -24,13 +25,11 @@ const Chat = () => {
   const [openChat, setOpenChat] = useState(true)
 
   const [active, setActive] = useState<string>('')
-  const [listFriends, setListFriends] = useState<FriendInterface[]>([])
   const [chats, setChats] = useState<ChatInterface[]>([])
 
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
-  const stringeeToken = useAppSelector((state) => state.token.stringeeToken)
   let receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
 
   const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
@@ -42,8 +41,9 @@ const Chat = () => {
   const [selectedUsers, setSelectedUsers] = useState<FriendInterface[]>([]);
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const [groupName, setGroupName2] = useState('Nhóm của ' + user.name);
-  const currentMessage = useAppSelector((state) => state.currentChat.messages)
-  const [tracking, setTracking] = useState(receiver)
+  
+  const currentMessage: any[] = useAppSelector((state) => state.currentChat.messages)
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
   
  
   let listF = user.listFriend
@@ -57,26 +57,24 @@ const Chat = () => {
   localStorage.setItem('myAvatar', user.avatar)
   localStorage.setItem('chatId', currentChatId)
   useEffect(() => {
-    const socket = new WebSocket(`ws://localhost:3001/?idUser=${userId}`);
+    const socket = new WebSocket(`wss://se-com-be.onrender.com?idUser=${userId}`);
   socket.addEventListener('open', function (event) {
     console.log("Connected to server")
   });
   //on message event
   socket.addEventListener('message', async function (event) {
     
-    const data = JSON.parse(event.data)
+    const data:any = JSON.parse(event.data)
     if (data.type === "RELOAD_MESSAGE") {
       if (data.chatId === currentChatId) {
         getMessage()
       }
     } else
       if (data.type === "text" || data.type === "video" || data.type === "image" || data.type === "file"||data.type==='video-call') {
-        console.log("ahiahidahsid")
-        console.log(data)
         getConversation()
         
         if (currentChatType==='single'&&receiver.idUser !== '' && receiver.idUser === data.user.idUser) { 
-          dispatch(setCurrentMessage([...currentMessage, data]))
+          dispatch(setCurrentMessage([...currentMessage, data]));
           toast(data.user.name + ": " + data.text);
         }
         else if(currentChatType==='group'&&currentChatId===data.chatId&&userId!==data.user.idUser){
@@ -156,7 +154,7 @@ const Chat = () => {
     const data = {
       chatId: currentChatId
     }
-    await axios.post('http://localhost:3000/getMessageByChatId', data)
+    await axios.post('${IP_BACKEND}/getMessageByChatId', data)
       .then((res) => {
         dispatch(setCurrentMessage(res.data.data))
       })
@@ -176,7 +174,7 @@ const Chat = () => {
   // console.log(userId)
 
   const getConversation = async () => {
-    await axios.post('http://localhost:3000/getChatByUserId', { idUser: userId })
+    await axios.post(`${IP_BACKEND}/getChatByUserId`, { idUser: userId })
       .then((res) => {
         //sort theo lastMessageTime
         res.data.data.sort((a: ChatInterface, b: ChatInterface) => {
@@ -262,7 +260,7 @@ const Chat = () => {
       type: 'group',
       idAdmin: userId
     }
-    await axios.post('http://localhost:3000/createGroupChat', data)
+    await axios.post(`${IP_BACKEND}/createGroupChat`, data)
       .then((res) => {
       setCreating(false)
         getConversation()

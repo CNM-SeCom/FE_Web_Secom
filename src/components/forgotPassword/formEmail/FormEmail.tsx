@@ -3,12 +3,14 @@ import './FormEmail.scss'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
+
 const FormEmail = () => {
   const [email, setEmail] = useState<string>('')
 
   const { state } = useLocation()
 
   const navigate = useNavigate()
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   useEffect(() => {
     if(state != null) {
@@ -19,7 +21,7 @@ const FormEmail = () => {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
 
-    await axios.post('http://localhost:3000/sendOTP', {
+    await axios.post(`${IP_BACKEND}/sendOTP`, {
         email: email,
     })
     .then(() => {

@@ -21,6 +21,7 @@ const Setting = () => {
   //Chuyển avatar: string thành blob
   const avatarBlob = new Blob([avatar], { type: 'text/plain' });
   const coverBlob = new Blob([coverImage], { type: 'text/plain' });
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   //Update thông tin trong redux
   const updateNameRedux = () => {
@@ -61,7 +62,7 @@ const Setting = () => {
 
     console.log("FormData", formData.get('file'))
 
-    await axios.post('http://localhost:3000/uploadAvatarWeb', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    await axios.post(`${IP_BACKEND}/uploadAvatarWeb`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     .then(() => {
       console.log('Change avatar successfully')
       updateAvatarRedux()
@@ -83,7 +84,8 @@ const Setting = () => {
 
     console.log("FormData", formData.get('file'))
 
-    await axios.post('http://localhost:3000/uploadCoverImageWeb', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+
+    await axios.post(`${IP_BACKEND}/uploadCoverImageWeb`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     .then(() => {
       console.log('Change cover image successfully')
       updateCoverImageRedux()
@@ -96,7 +98,7 @@ const Setting = () => {
 
   const handleSubmitName = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-        await axios.post('http://localhost:3000/changeProfile', {
+        await axios.post(`${IP_BACKEND}/changeProfile`, {
             name: name,
         }).then(() => {
             console.log('Change name successfully')

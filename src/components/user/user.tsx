@@ -1,8 +1,8 @@
 import './user.scss'
 import { FriendInterface, ReqAddFriendInterface, UserInterface } from '../../interface/Interface'
 import axios from 'axios'
-import { useSelector } from 'react-redux'
 import { useAppSelector } from '../../redux/Store'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { setUser } from '../../redux/UserSlice';
@@ -14,13 +14,35 @@ interface Props {
 }
 
 const user = ({user} : Props) => {
-  const navigate = useNavigate()
+
   const fromUser: UserInterface = useAppSelector((state) => state.user.userInfo)
   const [flag, setFlag] = useState(true)
-  const token = useSelector((state) => state.token.token);
+  const token  = useAppSelector((state) => state.token.accessToken)
+
   // console.log(token);
+  
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  };
+
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
+  const handleNotify = (receiverId:string, name:string) => {
+    const data = {
+      receiverId: receiverId,
+      name : name
+    }
+  
+    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, {data})
+    .then((response) => {
+      console.log(response.data);
+    })
+  
+  }
 
   const handleAddFriend = (toIdUser: string, nameToUser: string, avatar: string) => {
+    
+    
+ 
     const data ={
       fromUser: fromUser.idUser,
       nameFromUser: fromUser.name,
@@ -29,11 +51,13 @@ const user = ({user} : Props) => {
       nameToUser : nameToUser, 
       avatarToUser : avatar,
     }
-
-    console.log(data);
     if(flag){
-      axios.post('http://localhost:3000/sendRequestAddFriend', data)
-      .then((response) => {
+       
+      axios.post(`${IP_BACKEND}/sendRequestAddFriend`, data, config)
+      .then(() => {
+        handleNotify(data.toUser, data.nameFromUser);
+        // console.log(response.data);
+
         setFlag(false)
       })
       .catch((error) => {
@@ -100,7 +124,14 @@ const user = ({user} : Props) => {
   
    
   return (
-
+    <div className={'conversation-wrapper'}>
+      <img src={user.avatar} alt='avatar-user' />
+      <h4>{user.name}</h4> 
+      <button 
+        className={`${flag? 'btnActive' : 'btn'}`} 
+        onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}>{flag ? '+': '-'}</button>
+    </div>
+<!-- 
         <div className={'conversation-wrapper1'}>
             <img src={user.avatar} alt='avatar-user' />
             <h4>{user.name}</h4> 
@@ -109,7 +140,7 @@ const user = ({user} : Props) => {
               onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}
               // onClick={() => checkExistRequestAddFriend()}
               >{flag ? '+': '-'}</button>
-        </div>
+        </div> -->
   )
 }
 export default user

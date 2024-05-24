@@ -1,11 +1,11 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { FriendInterface, MessageInterface } from "../interface/Interface";
+import { FriendInterface} from "../interface/Interface";
 
 
 interface CurrentChatState {
     chatId: string,
     receiver: FriendInterface,
-    messages: MessageInterface[]
+    messages: any[]
     currentTyping: boolean
     listChat: []
     currentChatType: string

@@ -21,13 +21,13 @@ const friend = ({fr} : Props) => {
   // console.log(token);
 
   
-  
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   const reloadUser = async () => {
     const body = {
       idUser: fromUser.idUser
     }
-    await axios.post('http://localhost:3000/reloadUser', body)
+    await axios.post(`${IP_BACKEND}/reloadUser`, body)
       .then((res) => {
         setUser(res.data.data)
       })
@@ -41,10 +41,13 @@ const friend = ({fr} : Props) => {
       idUser: fromUser.idUser,
       friendId: fr.idUser
     }
-    await axios.post('http://localhost:3000/unFriend', body)
+    await axios.post(`${IP_BACKEND}/unFriend`, body)
       .then((res) => {
         setUser(res.data.data)
         reloadUser()
+        //reload trang này
+        window.location.reload()
+
         navigate("/friends")
       })
       .catch(() => {

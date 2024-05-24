@@ -32,6 +32,7 @@ const VerifyOTP = () => {
     })
     const [email1, setEmail1] = useState<string>('')
     const { state } = useLocation()
+    const IP_BACKEND = 'https://se-com-be.onrender.com'
 
     const navigate = useNavigate()
     // const dispatch = useAppDispatch()
@@ -42,7 +43,7 @@ const VerifyOTP = () => {
         console.log(infoSignup)
         console.log(email1)
 
-        await axios.post('http://localhost:3000/verifyOTP', {
+        await axios.post(`${IP_BACKEND}/verifyOTP`, {
             email: email1,
             otp: otp,
         })
@@ -50,7 +51,7 @@ const VerifyOTP = () => {
             const genderr: number = parseInt(infoSignup.gender)
 
             if(state.flag == 1) {
-                await axios.post('http://localhost:3000/create', {
+                await axios.post(`${IP_BACKEND}/create`, {
                     phone: infoSignup.phone,
                     name: infoSignup.name,
                     gender: genderr,

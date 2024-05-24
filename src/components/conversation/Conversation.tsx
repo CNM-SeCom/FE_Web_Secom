@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPeopleGroup } from '@fortawesome/free-solid-svg-icons'
 
 
+
 interface Props {
   friendId: string,
   setActive: React.Dispatch<React.SetStateAction<string>>,
@@ -23,6 +24,7 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const currentChatId: string = useAppSelector((state) => state.currentChat.chatId)
   let formattedDate
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
   if(chats.lastMessageTime){
     const date = new Date(chats.lastMessageTime)
     const year = date.getFullYear();
@@ -45,7 +47,7 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
     const data = {
       chatId: chatid
     }
-    await axios.post('http://localhost:3000/getMessageByChatId', data)
+    await axios.post(`${IP_BACKEND}/getMessageByChatId`, data)
       .then((res) => {
         dispatch(setCurrentMessage(res.data.data))
       })
