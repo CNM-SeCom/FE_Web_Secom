@@ -40,3 +40,7 @@ export interface MessageInterface{
     video: string,
     _id: number
 }
+export interface TokenInterface {
+    accessToken: string,
+    refreshToken: string,
+}

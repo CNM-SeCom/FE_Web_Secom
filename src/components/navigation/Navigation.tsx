@@ -1,4 +1,4 @@
-import { faArrowRightFromBracket, faComment, faGear, faUser } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faComment, faUser } from '@fortawesome/free-solid-svg-icons'
 import './Navigation.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome' 
 import { useState } from 'react'
@@ -21,7 +21,8 @@ const Navigation = () => {
   const [active, setActive] = useState<number>(NavItem.CHAT)
 
   const dispatch = useAppDispatch()
-  const token: string | null = useAppSelector((state) => state.token.token)
+  const token  = useAppSelector((state) => state.token.token)
+  
   const user = useAppSelector((state) => state.user.userInfo)
 
   const navigate = useNavigate()
@@ -30,7 +31,7 @@ const Navigation = () => {
   const handleLogout = async () => {
     const res = await axios.post(`${IP_BACKEND}/logout`, { idUser: user.idUser}, {headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token.accessToken}`
+      'Authorization': `Bearer ${token?.accessToken}` // Add null check for token
     }})
     // console.log(res)
 

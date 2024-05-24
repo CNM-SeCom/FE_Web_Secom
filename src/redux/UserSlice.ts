@@ -12,7 +12,7 @@ const initialState: UserState = {
         address: '',
         avatar: '',
         email: '',
-        gender: '',
+        gender: 0,
         listBlock: [],
         listChat: [],
         listFriend: [],

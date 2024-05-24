@@ -43,9 +43,11 @@ const Chat = () => {
   const [selectedUsers, setSelectedUsers] = useState<FriendInterface[]>([]);
   const [selectedCount, setSelectedCount] = useState<number>(0);
   const [groupName, setGroupName2] = useState('Nhóm của ' + user.name);
-  const currentMessage = useAppSelector((state) => state.currentChat.messages)
+  
+  const currentMessage: any[] = useAppSelector((state) => state.currentChat.messages)
   const [tracking, setTracking] = useState(receiver)
   const IP_BACKEND = 'https://se-com-be.onrender.com'
+  
  
   let listF = user.listFriend
 
@@ -65,7 +67,7 @@ const Chat = () => {
   //on message event
   socket.addEventListener('message', async function (event) {
     
-    const data = JSON.parse(event.data)
+    const data:any = JSON.parse(event.data)
     if (data.type === "RELOAD_MESSAGE") {
       if (data.chatId === currentChatId) {
         getMessage()
@@ -77,7 +79,7 @@ const Chat = () => {
         getConversation()
         
         if (currentChatType==='single'&&receiver.idUser !== '' && receiver.idUser === data.user.idUser) { 
-          dispatch(setCurrentMessage([...currentMessage, data]))
+          dispatch(setCurrentMessage([...currentMessage, data]));
           toast(data.user.name + ": " + data.text);
         }
         else if(currentChatType==='group'&&currentChatId===data.chatId&&userId!==data.user.idUser){
