@@ -60,8 +60,9 @@ const Setting = () => {
     formData.append('idUser', user.idUser); 
 
     console.log("FormData", formData.get('file'))
+    const IP_BACKEND = 'https://se-com-be.onrender.com'
 
-    await axios.post('http://localhost:3000/uploadAvatarWeb', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    await axios.post(`${IP_BACKEND}/uploadAvatarWeb`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     .then(() => {
       console.log('Change avatar successfully')
       updateAvatarRedux()
@@ -83,7 +84,7 @@ const Setting = () => {
 
     console.log("FormData", formData.get('file'))
 
-    await axios.post('http://localhost:3000/uploadCoverImageWeb', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    await axios.post(`${IP_BACKEND}/uploadCoverImageWeb`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     .then(() => {
       console.log('Change cover image successfully')
       updateCoverImageRedux()
@@ -96,7 +97,7 @@ const Setting = () => {
 
   const handleSubmitName = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-        await axios.post('http://localhost:3000/getListUserByName', {
+        await axios.post(`${IP_BACKEND}/getListUserByName`, {
             name: name,
         }).then(() => {
             console.log('Change name successfully')

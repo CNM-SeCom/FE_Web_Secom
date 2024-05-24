@@ -1,8 +1,12 @@
 import axios from 'axios';
+//import .env
+
+
 var callDuration = 0; // Biến đếm thời gian cuộc gọi (giây)
 var callTimer; // Biến interval để cập nhật thời gian
 var timer ='00';
 let checkAnswer = false;
+const IP_BACKEND = 'https://se-com-be.onrender.com'
 // Hàm cập nhật thời gian gọi
 function updateCallDuration() {
     callDuration++;
@@ -15,9 +19,6 @@ function formatTime(seconds) {
     var hours = Math.floor(seconds / 3600);
     var minutes = Math.floor((seconds % 3600) / 60);
     var remainingSeconds = seconds % 60;
-    console.log(hours.toString().padStart(2, '0') + ':' +
-    minutes.toString().padStart(2, '0') + ':' + 
-    remainingSeconds.toString().padStart(2, '0'))
     return hours.toString().padStart(2, '0') + ':' +
            minutes.toString().padStart(2, '0') + ':' +
            remainingSeconds.toString().padStart(2, '0');
@@ -39,7 +40,7 @@ async function sendMessageCallVideo(text){
         }
       }
     
-      await axios.post('http://localhost:3000/ws/send-message-call-to-user', data).then((res) => {
+      await axios.post(`${IP_BACKEND}/ws/send-message-call-to-user`, data).then((res) => {
         //xóa đi data.message trong mảng messagesCurren
       }).catch(() => {
         console.log('Error when send message')
@@ -131,7 +132,7 @@ jQuery(function () {
             callerId: JSON.parse(stringee).callerId,
             name: localStorage.getItem('myName'),
         }
-        await axios.post('http://localhost:3000/ws/sendNotifyCallVideo', data).then(res => {
+        await axios.post(`${IP_BACKEND}/ws/sendNotifyCallVideo`, data).then(res => {
             console.log(res)
         }).catch(err => {
             console.log(err)
@@ -214,6 +215,8 @@ jQuery(function () {
     client.on('incomingcall', function (incomingcall) {
         currentCall = incomingcall;
         settingCallEvent(currentCall, localVideo, remoteVideo, answerCallButton, endCallButton, rejectCallButton);
+        remoteVideo.src = "https://res.cloudinary.com/dekjrisqs/video/upload/v1715183781/oc75nvbiljleocfl8hun.mp4"
+        remoteVideo.play();
         // callButton.hide();
         answerCallButton.show();
         rejectCallButton.show();
@@ -253,7 +256,7 @@ jQuery(function () {
 
     endCallButton.on('click', function () {
         clearInterval(callTimer); 
-        if(checkAnswer===false&&checkCall===true    ){
+        if(checkAnswer===false&&checkCall===true){
             sendMessageCallVideo("Cuộc gọi nhỡ")
         }
         else if(checkCall===true){

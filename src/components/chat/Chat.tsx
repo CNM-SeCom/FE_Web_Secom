@@ -15,6 +15,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
 
+
 const Chat = () => {
 
 
@@ -44,7 +45,7 @@ const Chat = () => {
   const [groupName, setGroupName2] = useState('Nhóm của ' + user.name);
   const currentMessage = useAppSelector((state) => state.currentChat.messages)
   const [tracking, setTracking] = useState(receiver)
-  
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
  
   let listF = user.listFriend
 
@@ -57,7 +58,7 @@ const Chat = () => {
   localStorage.setItem('myAvatar', user.avatar)
   localStorage.setItem('chatId', currentChatId)
   useEffect(() => {
-    const socket = new WebSocket(`ws://localhost:3001/?idUser=${userId}`);
+    const socket = new WebSocket(`wss://se-com-be.onrender.com?idUser=${userId}`);
   socket.addEventListener('open', function (event) {
     console.log("Connected to server")
   });
@@ -156,7 +157,7 @@ const Chat = () => {
     const data = {
       chatId: currentChatId
     }
-    await axios.post('http://localhost:3000/getMessageByChatId', data)
+    await axios.post('${IP_BACKEND}/getMessageByChatId', data)
       .then((res) => {
         dispatch(setCurrentMessage(res.data.data))
       })
@@ -176,7 +177,7 @@ const Chat = () => {
   // console.log(userId)
 
   const getConversation = async () => {
-    await axios.post('http://localhost:3000/getChatByUserId', { idUser: userId })
+    await axios.post(`${IP_BACKEND}/getChatByUserId`, { idUser: userId })
       .then((res) => {
         //sort theo lastMessageTime
         res.data.data.sort((a: ChatInterface, b: ChatInterface) => {
@@ -262,7 +263,7 @@ const Chat = () => {
       type: 'group',
       idAdmin: userId
     }
-    await axios.post('http://localhost:3000/createGroupChat', data)
+    await axios.post(`${IP_BACKEND}/createGroupChat`, data)
       .then((res) => {
       setCreating(false)
         getConversation()

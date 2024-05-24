@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom'
 
 import axios from 'axios'
 import User from './../user/user';
+import { UserInterface } from '../../interface/Interface'
+
 
 const findFriend = () => {
 
@@ -20,6 +22,8 @@ const findFriend = () => {
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
 
   const navigate = useNavigate()
+  const userData: UserInterface = useAppSelector((state) => state.user.userInfo)
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
 const handleNameFriend = async (e:  React.ChangeEvent<HTMLInputElement>) =>{
     e.preventDefault();
@@ -28,10 +32,15 @@ const handleNameFriend = async (e:  React.ChangeEvent<HTMLInputElement>) =>{
 
 const handleSubmitFindUser = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
   e.preventDefault()
-  await axios.post('http://localhost:3000/getListUserByName', {
+  await axios.post(`${IP_BACKEND}/getListUserByName`, {
       name: name,
   }).then((res) => {
-      setList(res.data.data)
+    const userIds = userData.listFriend.map(user => user.idUser);
+    let data = res.data.data.filter((item) => {
+      // bỏ đi item có idUser nằm trong listFriend
+      return !userIds.includes(item.idUser);    
+    })
+      setList(data)
       setFlag(true)
   })
   .catch(() => {

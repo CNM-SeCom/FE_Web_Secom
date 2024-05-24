@@ -3,10 +3,12 @@ import './ChangePassword.scss'
 import axios from 'axios'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+
 const ChangePassword = () => {
     const [password, setPassword] = useState<string>('')
     const [newPassword, setNewPassword] = useState<string>('')
     const [flag, setFlag] = useState<boolean>(false)
+    const IP_BACKEND = 'https://se-com-be.onrender.com'
 
     const navigate = useNavigate()
 
@@ -16,7 +18,7 @@ const ChangePassword = () => {
         e.preventDefault()
 
         if(password === newPassword) {
-            await axios.post('http://localhost:3000/forgotPassword', {
+            await axios.post(`${IP_BACKEND}/forgotPassword`, {
                 phone: state.phone,
                 newPass: newPassword,
             }).then(() => {

@@ -58,7 +58,7 @@ const Messages = () => {
   const avatarGroup = useAppSelector((state) => state.currentChat.avatarGroup)
   const [avt, setAvt] = useState(avatarGroup)
   const [loadingChangeAvatar, setLoadingChangeAvatar] = useState(false)
-  
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   useEffect(() => {}, [listParticipant])
   useEffect(() => {setNameGroup(name)}, [name])
@@ -69,7 +69,7 @@ const Messages = () => {
     const data = {
       idUser: user.idUser
     }
-    await axios.post('http://localhost:3000/getListFriendByUserId', data).then((res) => {
+    await axios.post(`${IP_BACKEND}/getListFriendByUserId`, data).then((res) => {
       setListFriends(res.data.data)
     }).catch(() => {
     })
@@ -94,7 +94,7 @@ const Messages = () => {
     const data = {
       chatId: currentChatId
     }
-    await axios.post('http://localhost:3000/getMessageByChatId', data)
+    await axios.post(`${IP_BACKEND}/getMessageByChatId`, data)
       .then((res) => {
         dispatch(setCurrentMessage(res.data.data))
       })
@@ -132,7 +132,7 @@ const Messages = () => {
       }
       const newMessages = [...messagesCurrent, data.message]
       dispatch(setCurrentMessage(newMessages))
-      await axios.post('http://localhost:3000/uploadImageMessageWeb', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
+      await axios.post(`${IP_BACKEND}/uploadImageMessageWeb`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
 
         data = {
           listReceiver: listParticipant,
@@ -170,7 +170,7 @@ const Messages = () => {
       }
       const newMessages = [...messagesCurrent, data.message]
       dispatch(setCurrentMessage(newMessages))
-      await axios.post('http://localhost:3000/cloudinary/uploadVideoWeb', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
+      await axios.post(`${IP_BACKEND}/cloudinary/uploadVideoWeb`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
         console.log(res.data.url)
         data = {
           listReceiver: listParticipant,
@@ -210,7 +210,7 @@ const Messages = () => {
       const newMessages = [...messagesCurrent, data.message]
       dispatch(setCurrentMessage(newMessages))
 
-      await axios.post('http://localhost:3000/uploadFile', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      await axios.post(`${IP_BACKEND}/uploadFile`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
         .then((res) => {
           data = {
             listReceiver: listParticipant,
@@ -257,7 +257,7 @@ const Messages = () => {
     setFile(null)
     setTxtMessage('')
     if (currentChatType === 'single') {
-      await axios.post('http://localhost:3000/ws/send-message-to-user', data).then((res) => {
+      await axios.post(`${IP_BACKEND}/ws/send-message-to-user`, data).then((res) => {
         //xóa đi data.message trong mảng messagesCurrent
         const newMessagesWithoutData = messagesCurrent.filter((message) => message !== data.message);
         dispatch(setCurrentMessage(newMessagesWithoutData));
@@ -270,7 +270,7 @@ const Messages = () => {
       })
     }
     else {
-      await axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, data).then((res) => {
+      await axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, data).then((res) => {
         //xóa đi data.message trong mảng messagesCurrent
         const newMessagesWithoutData = messagesCurrent.filter((message) => message !== data.message);
         dispatch(setCurrentMessage(newMessagesWithoutData));
@@ -313,7 +313,7 @@ const Messages = () => {
       setLoadingChangeAvatar(true)
       const formData = new FormData();
     formData.append('file', fileAvatar);
-    await axios.post('http://localhost:3000/uploadImageMessageWeb', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
+    await axios.post(`${IP_BACKEND}/uploadImageMessageWeb`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
     const data = {
         chatId: currentChatId,
         avatar: res.data.uri
@@ -333,11 +333,11 @@ const Messages = () => {
           avatar: res.data.uri
         }
       }
-      axios.post('http://localhost:3000/changeAvatarGroup', data).then((res) => {
+      axios.post(`${IP_BACKEND}/changeAvatarGroup`, data).then((res) => {
         setFileAvatar(null)
         setAvt(data.avatar)
         setLoadingChangeAvatar(false)
-        axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
+        axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
           const newMessagesHasId = [...messagesCurrent, res.data.data]
           dispatch(setCurrentMessage(newMessagesHasId))
         }).catch(() => {
@@ -371,7 +371,7 @@ const Messages = () => {
         receiverId: currentReceiverId,
         userId: userId
       }
-      await axios.post('http://localhost:3000/ws/sendTypingToUser', data).then(() => {
+      await axios.post(`${IP_BACKEND}/ws/sendTypingToUser`, data).then(() => {
         console.log('Send typing')
       }).catch(() => {
         console.log('Error when send typing')
@@ -384,7 +384,7 @@ const Messages = () => {
         listReceiver: listParticipant,
         userId: userId
       }
-      await axios.post('http://localhost:3000/ws/sendTypingToGroup', data).then(() => {
+      await axios.post(`${IP_BACKEND}/ws/sendTypingToGroup`, data).then(() => {
         console.log('Send typing')
       }).catch(() => {
         console.log('Error when send typing')
@@ -469,14 +469,14 @@ const Messages = () => {
       }
       const newMessages = [...messagesCurrent, update.message]
       dispatch(setCurrentMessage(newMessages))
-      await axios.post('http://localhost:3000/leaveOrKickoutGroupChat', data).then(() => {
+      await axios.post(`${IP_BACKEND}/leaveOrKickoutGroupChat`, data).then(() => {
         setLoadingLeaveGroup(false)
         setIsModalOptionVisible(false)
         dispatch(setCurrentReceiver({name: '', idUser: '', avatar: ''}))
         dispatch(setCurrentMessage([]))
         dispatch(setListParticipant([]))
         setIsModalVisible(false)
-        axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
+        axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
           const newMessagesWithoutData = messagesCurrent.filter((message) => message !== update.message);
           dispatch(setCurrentMessage(newMessagesWithoutData));
           const newMessagesHasId = [...messagesCurrent, res.data.data]
@@ -495,7 +495,7 @@ const Messages = () => {
       userId: userId,
       chatId: currentChatId
     }
-    // await axios.post('http://localhost:3000/leaveGroup', data).then(() => {
+    // await axios.post('${IP_BACKEND}/leaveGroup', data).then(() => {
     //   console.log('Leave group')
     // }).catch(() => {
     //   console.log('Error when leave group')
@@ -532,13 +532,13 @@ const Messages = () => {
     }
     const newMessages = [...messagesCurrent, update.message]
     dispatch(setCurrentMessage(newMessages))
-    await axios.post('http://localhost:3000/addMemberToGroupChat', data).then(() => {
+    await axios.post(`${IP_BACKEND}/addMemberToGroupChat`, data).then(() => {
       setLoadingAddMember(false)
       setIsModalAddVisible(false)
       setIsModalVisible(false)
       const listParticipantAfterAdd = [...listParticipant, ...selectedUsers]
       dispatch(setListParticipant(listParticipantAfterAdd))
-      axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
+      axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
         const newMessagesWithoutData = messagesCurrent.filter((message) => message !== update.message);
         dispatch(setCurrentMessage(newMessagesWithoutData));
         const newMessagesHasId = [...messagesCurrent, res.data.data]
@@ -573,10 +573,10 @@ const Messages = () => {
           participants: listParticipant
         }
       }
-      await axios.post('http://localhost:3000/deleteChat', data).then(() => {
+      await axios.post(`${IP_BACKEND}/deleteChat`, data).then(() => {
         setIsModalOptionVisible(false)
         setIsModalVisible(false)
-        axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
+        axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
         }).catch(() => {
           console.log('Error when send message')
         })
@@ -646,12 +646,12 @@ const Messages = () => {
     }
     const newMessages = [...messagesCurrent, update.message]
     dispatch(setCurrentMessage(newMessages))
-    await axios.post('http://localhost:3000/leaveOrKickoutGroupChat', data).then(() => {
+    await axios.post(`${IP_BACKEND}/leaveOrKickoutGroupChat`, data).then(() => {
       setLoadingDeleteMember(false)
       setIsModalOptionVisible(false)
       const listParticipantAfterDelete = listParticipant.filter((participant) => participant.idUser !== memberSelected?.idUser)
       dispatch(setListParticipant(listParticipantAfterDelete))
-      axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
+      axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
         const newMessagesWithoutData = messagesCurrent.filter((message) => message !== update.message);
         dispatch(setCurrentMessage(newMessagesWithoutData));
         const newMessagesHasId = [...messagesCurrent, res.data.data]
@@ -713,10 +713,10 @@ const Messages = () => {
     }
     const newMessages = [...messagesCurrent, update.message]
     dispatch(setCurrentMessage(newMessages))
-    await axios.post('http://localhost:3000/setAdminForMember', data).then(() => {
+    await axios.post(`${IP_BACKEND}/setAdminForMember`, data).then(() => {
       setLoadingSetAdmin(false)
       setIsModalOptionVisible(false)
-      axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
+      axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
         const newMessagesWithoutData = messagesCurrent.filter((message) => message !== update.message);
         dispatch(setCurrentMessage(newMessagesWithoutData));
         const newMessagesHasId = [...messagesCurrent, res.data.data]
@@ -752,9 +752,9 @@ const Messages = () => {
     }
     const newMessages = [...messagesCurrent, update.message]
     dispatch(setCurrentMessage(newMessages))
-    await axios.post('http://localhost:3000/changeGroupName', data).then(() => {
+    await axios.post(`${IP_BACKEND}/changeGroupName`, data).then(() => {
       setIsModalVisible(false)
-      axios.post(`http://localhost:3000/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
+      axios.post(`${IP_BACKEND}/ws/send-message-to-group/${currentChatId}`, update).then((res) => {
         const newMessagesWithoutData = messagesCurrent.filter((message) => message !== update.message);
         dispatch(setCurrentMessage(newMessagesWithoutData));
         const newMessagesHasId = [...messagesCurrent, res.data.data]
@@ -785,7 +785,7 @@ const Messages = () => {
   //         name:  user.name,
          
   //     }
-  //     await axios.post('http://localhost:3000/ws/sendNotifyCallVideo', data ).then(res => {
+  //     await axios.post('${IP_BACKEND}/ws/sendNotifyCallVideo', data ).then(res => {
   //         console.log(res)
   //     }).catch(err => {
   //         console.log(err)

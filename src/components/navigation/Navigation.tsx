@@ -25,9 +25,10 @@ const Navigation = () => {
   const user = useAppSelector((state) => state.user.userInfo)
 
   const navigate = useNavigate()
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   const handleLogout = async () => {
-    const res = await axios.post('http://localhost:3000/logout', { idUser: user.idUser}, {headers: {
+    const res = await axios.post(`${IP_BACKEND}/logout`, { idUser: user.idUser}, {headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token.accessToken}`
     }})
@@ -47,43 +48,24 @@ const Navigation = () => {
 
   return (
     <div className='nav-wrapper' 
-         style={{display: `${window.location.href == 'http://localhost:5173/welcome' || window.location.href == 'http://localhost:5173/forgot-password' || window.location.href == 'http://localhost:5173/verify-otp' || window.location.href == 'http://localhost:5173/form-email' || window.location.href == 'http://localhost:5173/change-password' || window.location.href == 'http://localhost:5173/form-phone' ? 'none' : 'flex'}`}}>
-      {/* <div className={`${active == NavItem.HOME ? 'nav-item active' : 'nav-item'}`} onClick={() => {
-          setActive(NavItem.HOME)
-          navigate('')
-      }}>
-        <FontAwesomeIcon className='nav-icon' icon={faHouse} />
-        <p>Trang chủ</p>
-      </div> */}
-      <div className={`${active == NavItem.CHAT ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+         style={{ display: `${['/welcome', '/forgot-password', '/verify-otp', '/form-email', '/change-password', '/form-phone'].includes(window.location.pathname) ? 'none' : 'flex'}` }}>
+      <div className={`${active === NavItem.CHAT ? 'nav-item active' : 'nav-item'}`} onClick={() => {
           setActive(NavItem.CHAT)
-          dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
+          dispatch(setCurrentReceiver({ idUser: '', name: '', avatar: '' }))
           navigate('/chat')
       }}>
         <FontAwesomeIcon className='nav-icon' icon={faComment} />
         <p>Tin nhắn</p>
       </div>
-      <div className={`${active == NavItem.PROFILE ? 'nav-item active' : 'nav-item'}`} onClick={() => {
-        // navigate(`/profile/${user.idUser}`)
-      
-        navigate(`/profile`)
-        dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
-        setActive(NavItem.PROFILE)
+      <div className={`${active === NavItem.PROFILE ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+          navigate('/profile')
+          dispatch(setCurrentReceiver({ idUser: '', name: '', avatar: '' }))
+          setActive(NavItem.PROFILE)
       }}>
         <FontAwesomeIcon className='nav-icon' icon={faUser} />
         <p>Trang cá nhân</p>
       </div>
-      <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => {
-        navigate('/setting')
-        dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
-        setActive(NavItem.SETTING)
-      }}>
-        <FontAwesomeIcon className='nav-icon' icon={faGear} />  
-        <p>Cài đặt</p>
-      </div>    
-      <div className='nav-item' onClick={() =>
-        
-        handleLogout()}>
+      <div className='nav-item' onClick={handleLogout}>
         <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
         <p>Đăng xuất</p>
       </div>    

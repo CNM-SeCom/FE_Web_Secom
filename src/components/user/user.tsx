@@ -23,13 +23,14 @@ const user = ({user} : Props) => {
     headers: { Authorization: `Bearer ${token.accessToken}` }
   };
 
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
   const handleNotify = (receiverId: React.MouseEvent<HTMLButtonElement, MouseEvent>, name: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const data = {
       receiverId: receiverId,
       name : name
     }
   
-    axios.post('http://localhost:3000/ws/sendNotifyAddFriendToUser', {data})
+    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, {data})
     .then((response) => {
       console.log(response.data);
     })
@@ -50,7 +51,7 @@ const user = ({user} : Props) => {
     }
     console.log(data);
     if(flag){
-      axios.post('http://localhost:3000/sendRequestAddFriend', data, config)
+      axios.post(`${IP_BACKEND}/sendRequestAddFriend`, data, config)
       .then((response) => {
         handleNotify(toIdUser, data.nameFromUser);
         // console.log(response.data);

@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux'
 import { ChatInterface } from '../../interface/Interface'
 
 
+
 interface Props {
   message: {}
   chatType: string
@@ -34,9 +35,10 @@ const Message = ({ message, chatType }: Props) => {
   const [isModalShareVisible, setIsModalShareVisible] = useState(false);
   const [chats, setChats] = useState<ChatInterface[]>([])
   const [listChat, setListChat] = useState<ChatInterface[]>([])
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   const getConversation = async () => {
-    await axios.post('http://localhost:3000/getChatByUserId', { idUser: user.idUser})
+    await axios.post(`${IP_BACKEND}/getChatByUserId`, { idUser: user.idUser})
       .then((res) => {
         //sort theo lastMessageTime
         res.data.data.sort((a: ChatInterface, b: ChatInterface) => {
@@ -81,7 +83,7 @@ const Message = ({ message, chatType }: Props) => {
         listReceiver: listParticipant
       }
     }
-    await axios.post('http://localhost:3000/deleteMessageById', data).then((res) => {
+    await axios.post(`${IP_BACKEND}/deleteMessageById`, data).then((res) => {
       getMessage()
       setLoadingDelete(false);
       showModal(false)
@@ -93,7 +95,7 @@ const Message = ({ message, chatType }: Props) => {
     const data = {
       chatId: currentChatId
     }
-    await axios.post('http://localhost:3000/getMessageByChatId', data)
+    await axios.post(`${IP_BACKEND}/getMessageByChatId`, data)
       .then((res) => {
         dispatch(setCurrentMessage(res.data.data))
       })

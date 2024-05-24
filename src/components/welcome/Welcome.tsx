@@ -35,12 +35,13 @@ const Welcome = () => {
     }
 
     const dispatch = useAppDispatch()
+    const IP_BACKEND = 'https://se-com-be.onrender.com'
     // const isVerify: boolean = useAppSelector((state) => state.otp.isVerify)
     const navigate = useNavigate()
 
     const updateToken = async (refreshToken: string, idUser: string) => {
         setTimeout( async () => {
-        await axios.post('http://localhost:3000/updateAccessToken', {
+        await axios.post(`${IP_BACKEND}/updateAccessToken`, {
             refreshToken: refreshToken,
             idUser: idUser,
         }, {validateStatus: () => {
@@ -58,9 +59,10 @@ const Welcome = () => {
 
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-
+console.log("+++++++++++++++++++")
+ console.log(IP_BACKEND)
         if(count < 3) {
-            await axios.post('http://localhost:3000/login', {
+            await axios.post(`${IP_BACKEND}/login`, {
                     phone: phone1,
                     pass: password1,
                 },
@@ -73,12 +75,11 @@ const Welcome = () => {
                 dispatch(changeLoginState(true))
                 // console.log(res.data.user)
                 setBlock1(Display.NONE)
-                 axios.post('http://localhost:3000/getCallAccessToken', {
+                 axios.post(`${IP_BACKEND}/getCallAccessToken`, {
                     userId: res.data.user.idUser,
                 }).then((res) => {
                     dispatch(setStringeeToken(res.data.data))
                     localStorage.setItem('stringeeToken', res.data.data)
-                    console.log("+++++++++++++++++++")
                     
                 })
                 navigate('/chat')
@@ -93,7 +94,7 @@ const Welcome = () => {
             })
         }
         else {
-            await axios.post('http://localhost:3000/findEmailByPhone', {
+            await axios.post(`${IP_BACKEND}/findEmailByPhone`, {
                 phone: phone1,
             })
             .then((res) => {
@@ -109,13 +110,13 @@ const Welcome = () => {
     const handleSignup = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
 
-        await axios.post('http://localhost:3000/checkPhoneExist', { phone: phone2 })
+        await axios.post(`${IP_BACKEND}/checkPhoneExist`, { phone: phone2 })
         .then(async () => {
             if(password2 != password3) {
                 setBlock2(Display.BLOCK)
             }
             else {
-                await axios.post('http://localhost:3000/sendOTP', {
+                await axios.post(`${IP_BACKEND}/sendOTP`, {
                     email: email,
                 })
                 .then(() => {

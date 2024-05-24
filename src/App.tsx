@@ -10,7 +10,7 @@ import VerifyOTP from './components/verifyOTP/VerifyOTP'
 import ChangePassword from './components/forgotPassword/changePassword/ChangePassword'
 import FormEmail from './components/forgotPassword/formEmail/FormEmail'
 import FormPhone from './components/forgotPassword/formPhone/FormPhone'
-
+  
 
 function App() {
 
