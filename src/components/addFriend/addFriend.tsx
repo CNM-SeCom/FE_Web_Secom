@@ -159,16 +159,19 @@ const addFriend = ({add, sentI} : Props) => {
               disabled={loading}
               onClick={() => (acceptRequestAddFriend())}
               >
-              {flag ? loading?'Đang chấp nhận':'Chấp nhận': loading?'Đang hủy':'Thu hồi'}
+              {flag ? loading?'Đang chấp nhận':'Chấp nhận': loading?'Đang từ chối':'Từ chối'}
               </button>
               {flag ? <button
               className='btnaf'
               onClick={() => {
                 axios.post(`${IP_BACKEND}/cancelRequestAddFriend`, add)
-
                 .then(() => {
-                  handleNotify(add.toUserUser, add.nameToUser);
-                  navigate("/friends")
+                  handleNotify(add.fromUser, add.nameToUser);
+                  let listRequest = Array()
+                  listRequest =  [...fromUser.listRequest]
+                  console.log("hahaha", listRequest)
+                  listRequest = [...fromUser.listRequest, add]
+                  dispatch(setUser({...fromUser, listRequest: listRequest}))
                 })
                 .catch((error) => {
                   console.log(error);

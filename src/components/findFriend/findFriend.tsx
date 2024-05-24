@@ -31,10 +31,8 @@ const findFriend = () => {
     await axios.post(`${IP_BACKEND}/getListUserByName`, {
       name: name,
     }).then((res) => {
-      const userIds = userData.listFriend.map(user => user.idUser);
-      console.log(userIds)
       //bỏ đi chính mình
-      const data = res.data.data.filter((user: UserInterface) => user.idUser !== userData.idUser && !userIds.includes(user.idUser));
+      const data = res.data.data.filter((user: UserInterface) => user.idUser !== userData.idUser);
       setList(data)
       setFlag(true)
     })

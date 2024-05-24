@@ -227,8 +227,8 @@ const Welcome = () => {
                     <label>
                         <span>Giới tính</span>
                         <select name='gender' onChange={(e) => setGender(e.target.value)}>
-                            <option value="0">Nam</option>
-                            <option value="1">Nữ</option>
+                            <option value="1">Nam</option>
+                            <option value="0">Nữ</option>
                             {/* <option value="other">Khác</option> */}
                         </select>
                     </label>
