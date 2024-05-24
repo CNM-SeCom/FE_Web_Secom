@@ -255,7 +255,8 @@ jQuery(function () {
     endCallButton.on('click', function () {
         clearInterval(callTimer);
         if (checkAnswer === false && checkCall === true) {
-            sendMessageCallVideo("Cuộc gọi nhỡ")    
+            sendMessageCallVideo("Cuộc gọi nhỡ") 
+            console.log("cuộc gọi nhỡ")   
         }
         else if (checkCall === true) {
             sendMessageCallVideo("Cuộc gọi video " + timer)
