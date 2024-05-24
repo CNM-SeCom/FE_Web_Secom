@@ -8,6 +8,7 @@ export interface UserInterface {
     listBlock: [],
     listChat: [],
     listFriend: [],
+    listRequest: [],
     name: string,
     phone: string,
     refreshToken: string,

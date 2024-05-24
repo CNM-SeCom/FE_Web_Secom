@@ -14,6 +14,7 @@ import { setAvatarGroup, setCurrentMessage, setCurrentReceiver, setCurrentTyping
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-modal';
+import { setUser } from '../../redux/UserSlice'
 
 
 const Chat = () => {
@@ -56,6 +57,19 @@ const Chat = () => {
   const dispatch = useAppDispatch()
   localStorage.setItem('myAvatar', user.avatar)
   localStorage.setItem('chatId', currentChatId)
+  const reloadUser = async () => {
+    const body = {
+      idUser: userId
+    }
+    await axios.post(`${IP_BACKEND}/reloadUser`, body)
+
+      .then((res) => {
+        dispatch(setUser(res.data.data))
+      })
+      .catch(() => {
+        console.log('Error')
+      })
+  }
   useEffect(() => {
     const socket = new WebSocket(`wss://se-com-be.onrender.com?idUser=${userId}`);
   socket.addEventListener('open', function (event) {
@@ -65,7 +79,11 @@ const Chat = () => {
   socket.addEventListener('message', async function (event) {
     
     const data:any = JSON.parse(event.data)
-    if (data.type === "RELOAD_MESSAGE") {
+    if(data.type==='ADD_FRIEND'){
+      reloadUser()
+    }
+
+    else  if (data.type === "RELOAD_MESSAGE") {
       if (data.chatId === currentChatId) {
         getMessage()
       }

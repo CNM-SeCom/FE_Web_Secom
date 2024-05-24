@@ -5,6 +5,8 @@ import { useAppSelector } from '../../redux/Store'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { setUser } from '../../redux/UserSlice';
+import { useDispatch } from 'react-redux'
+import Loading from '../loading/Loading'
 
 
 
@@ -15,10 +17,12 @@ interface Props {
 const user = ({user} : Props) => {
 
   const fromUser: UserInterface = useAppSelector((state) => state.user.userInfo)
+  console.log(fromUser)
   const [flag, setFlag] = useState(true)
   const token  = useAppSelector((state) => state.token.accessToken)
   const navigate = useNavigate()
-
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false)
   // console.log(token);
   
   const config = {
@@ -36,13 +40,10 @@ const user = ({user} : Props) => {
     .then((response) => {
       console.log(response.data);
     })
-  
   }
 
   const handleAddFriend = (toIdUser: string, nameToUser: string, avatar: string) => {
-    
-    
- 
+    setLoading(true)
     const data ={
       fromUser: fromUser.idUser,
       nameFromUser: fromUser.name,
@@ -57,7 +58,12 @@ const user = ({user} : Props) => {
       .then(() => {
         handleNotify(data.toUser, data.nameFromUser);
         // console.log(response.data);
-
+        setLoading(false)
+        let listRequest = Array()
+        listRequest =  [...fromUser.listRequest]
+        console.log("hahaha", listRequest)
+        listRequest = [...fromUser.listRequest, data]
+        dispatch(setUser({...fromUser, listRequest: listRequest}))
         setFlag(false)
       })
       .catch((error) => {
@@ -66,7 +72,9 @@ const user = ({user} : Props) => {
       );
     }else{
       axios.post(`${IP_BACKEND}/cancelRequestAddFriend`, data)
+      
       .then(() => {
+        handleNotify(data.toUser, data.nameFromUser);
         setFlag(true)
       })
       .catch((error) => {
@@ -124,23 +132,25 @@ const user = ({user} : Props) => {
   
    
   return (
-    <div className={'conversation-wrapper'}>
-      <img src={user.avatar} alt='avatar-user' />
-      <h4>{user.name}</h4> 
-      <button 
-        className={`${flag? 'btnActive' : 'btn'}`} 
-        onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}>{flag ? '+': '-'}</button>
-    </div>
+    // <div className={'conversation-wrapper'}>
+    //   <img src={user.avatar} alt='avatar-user' />
+    //   <h4>{user.name}</h4> 
+    //   <button 
+    //     className={`${flag? 'btnActive' : 'btn'}`} 
+    //     onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}>{flag ? 'Thêm bạn': 'Thu hồi'}</button>
+    // </div>
 // <!-- 
-//         <div className={'conversation-wrapper1'}>
-//             <img src={user.avatar} alt='avatar-user' />
-//             <h4>{user.name}</h4> 
-//             <button 
-//               className={`${flag? 'btnActive1' : 'btn1'}`} 
-//               onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}
-//               // onClick={() => checkExistRequestAddFriend()}
-//               >{flag ? '+': '-'}</button>
-//         </div> -->
+        <div className={'conversation-wrapper1'}>
+            <img src={user.avatar} alt='avatar-user' />
+            <h4>{user.name}</h4> 
+            {flag ? 
+            <button 
+            className={!loading?'btnActive1':'btn1'}
+            disabled={loading}
+            onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}
+            // onClick={() => checkExistRequestAddFriend()}
+            >{loading?'Đang gửi':'Thêm bạn'}</button>:null}
+        </div> 
   )
 }
 export default user

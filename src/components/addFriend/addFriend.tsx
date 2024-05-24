@@ -1,10 +1,11 @@
 import './addFriend.scss'
 import { ReqAddFriendInterface, SentAddFriendInterface, UserInterface } from '../../interface/Interface'
 import axios from 'axios'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useAppSelector } from '../../redux/Store'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { setUser } from '../../redux/UserSlice'
 
 
 interface Props {
@@ -17,6 +18,27 @@ const addFriend = ({add, sentI} : Props) => {
   const fromUser: UserInterface = useAppSelector((state) => state.user.userInfo)
   const [flag, setFlag] = useState(true)
   const token = useSelector((state) => state.token.token);
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
+  const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (add != null) {
+      setFlag(true)
+    } else if (sentI != null) {
+      setFlag(false)
+    }
+  }, [add, sentI])
+  const handleNotify = (receiverId:string, name:string) => {
+    const data = {
+      receiverId: receiverId,
+      name : name
+    }
+  
+    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, {data})
+    .then((response) => {
+      console.log(response.data);
+    })
+  }
 
   // console.log(token);
   
@@ -30,7 +52,7 @@ const addFriend = ({add, sentI} : Props) => {
   //     name : name
   //   }
   
-  //   axios.post('http://localhost:3000/ws/sendNotifyAddFriendToUser', {data})
+  //   axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser', {data})
   //   .then((response) => {
   //     console.log(response.data);
   //   })
@@ -39,13 +61,30 @@ const addFriend = ({add, sentI} : Props) => {
 
   const acceptRequestAddFriend = () => {
     const data = add
+    setLoading(true)
     console.log(data);
-    if(flag){
-      axios.post('http://localhost:3000/acceptRequestAddFriend', data)
+    if(flag){ 
+      
+      axios.post(`${IP_BACKEND}/acceptRequestAddFriend`, data)
       .then((response) => {
+        handleNotify(data.fromUser, data.nameToUser);
+        setLoading(false)
+        let listFriend = Array()
+        if(fromUser.listFriend == null){
+          listFriend = []
+        }
+        else{
+          listFriend =  [...fromUser.listFriend]
+        }
+        const newFriend = { 
+          idUser: data.fromUser,
+          name: data.nameFromUser,
+          avatar: data.avatarFromUser
+        }
+        listFriend.push(newFriend)
+        dispatch(setUser({...fromUser, listFriend: listFriend}))
         // handleNotify(toIdUser, data.nameFromUser);
         // console.log(response.data);
-        setFlag(false)
         navigate("/friends")
       })
       .catch((error) => {
@@ -55,9 +94,22 @@ const addFriend = ({add, sentI} : Props) => {
     }else{
       const data = sentI
       console.log(data);
-      axios.post('http://localhost:3000/cancelRequestAddFriend', data)
+      axios.post(`${IP_BACKEND}/cancelRequestAddFriend`, data)
       .then(() => {
-        setFlag(true)
+        handleNotify(data.toUser, data.nameFromUser);
+        setLoading(false)
+        let listRequest = Array()
+        if(fromUser.listRequest == null){
+          listRequest = []
+        }
+        else{
+          listRequest =  [...fromUser.listRequest]
+        }
+        //bỏ đi phần tử được cancle
+        listRequest = listRequest.filter((item) => item.toUser !== data.toUser&&item.fromUser !== data.fromUser)
+        console.log("hihihi")
+        console.log(listRequest)
+        dispatch(setUser({...fromUser, listRequest: listRequest}))
         navigate("/friends")
       })
       .catch((error) => {
@@ -77,7 +129,7 @@ const addFriend = ({add, sentI} : Props) => {
       avatarToUser: add?add.avatarFromUser:sentI.avatarToUser,
       nameToUser: name
     }
-    await axios.post('http://localhost:3000/checkExistRequestAddFriend', body)
+    await axios.post(`${IP_BACKEND}/checkExistRequestAddFriend`, body)
       .then((res) => {
         setFlag(res.data.success)
         // console.log(res.data.success);
@@ -93,7 +145,7 @@ const addFriend = ({add, sentI} : Props) => {
     //   if(!isLogin) {
     //     navigate('/welcome')
     //   }
-    checkExistRequestAddFriend()
+    // checkExistRequestAddFriend()
   }, [])
   
    
@@ -103,11 +155,27 @@ const addFriend = ({add, sentI} : Props) => {
             <img src={add?add.avatarFromUser:sentI.avatarToUser} alt='avatar-user' />
             <h4>{add?add.nameFromUser:sentI.nameToUser}</h4> 
             <button 
-              className={`${flag? 'btnActiveaf' : 'btnaf'}`} 
+              className={`${flag? loading?'btnActiveaf' : 'btnaf':'btnaf'}`} 
+              disabled={loading}
               onClick={() => (acceptRequestAddFriend())}
               >
-              {flag ? '+': '-'}
+              {flag ? loading?'Đang chấp nhận':'Chấp nhận': loading?'Đang hủy':'Thu hồi'}
               </button>
+              {flag ? <button
+              className='btnaf'
+              onClick={() => {
+                axios.post(`${IP_BACKEND}/cancelRequestAddFriend`, add)
+                .then(() => {
+                  navigate("/friends")
+                })
+                .catch((error) => {
+                  console.log(error);
+                }
+                );
+              }
+              }
+              >Từ chối</button> : null}
+
         </div>
     
   )

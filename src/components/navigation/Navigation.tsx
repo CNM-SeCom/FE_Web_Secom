@@ -81,15 +81,6 @@ const Navigation = () => {
         <FontAwesomeIcon className='nav-icon' icon={faUser} />
         <p>Bạn bè</p>
       </div>
-      
-      <div className={`${active == NavItem.SETTING ? 'nav-item active' : 'nav-item'}`} onClick={() => {
-        navigate('/setting')
-        dispatch(setCurrentReceiver({idUser: '', name: '', avatar: ''}))
-        setActive(NavItem.SETTING)
-      }}>
-        <FontAwesomeIcon className='nav-icon' icon={faUser} />
-        <p>Bạn bè</p>
-      </div>
       <div className='nav-item' onClick={handleLogout}>
         <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
         <p>Đăng xuất</p>

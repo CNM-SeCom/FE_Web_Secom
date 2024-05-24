@@ -80,7 +80,7 @@ const Conversation = ({ friendId, setActive, active, name, avatar, chats } : Pro
           }}>
       <img src={avatar} alt='avatar-user' />
       <div className="conversation-info">
-        <h4 style={{fontSize:13, marginLeft:-10, color:"black"}}>{name}</h4>
+        <h4 style={{fontSize:13,marginLeft:10, color:"black"}}>{name}</h4>
         <p style={{color:'black', marginLeft: 10}}>{chats.lastMessage}</p>
       </div>
       <div className="time-wrapper">

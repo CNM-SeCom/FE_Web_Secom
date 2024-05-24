@@ -33,6 +33,22 @@ const friends = () => {
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    getRequestAddFriendByUserId()
+    getListFriendByUserId()
+    getSentRequestAddFriendByUserId()
+    // let listSend = []
+    // let listReceive = []
+    // listSend = user.listRequest.filter((item) => item.fromUser === userId)
+    // setSentListReqAF(user.listRequest.filter((item) => item.fromUser === userId))
+    // console.log("alooo")
+    // console.log(user.listRequest.filter((item) => item.fromUser === userId))
+    // setListReqAF(user.listRequest.filter((item) => item.toUser === userId))
+    // listReceive = user.listRequest.filter((item) => item.toUser === userId)
+    // setListReqAF(listReceive)
+    // setSentListReqAF(res.data.data)
+  }, [user])
   
   const IP_BACKEND = 'https://se-com-be.onrender.com'
 
@@ -90,7 +106,7 @@ const friends = () => {
     await axios.post(`${IP_BACKEND}/reloadUser`, body)
 
       .then((res) => {
-        setUser(res.data.data)
+        dispatch(setUser(res.data.data))
         console.log(res.data.data);
       })
       .catch(() => {

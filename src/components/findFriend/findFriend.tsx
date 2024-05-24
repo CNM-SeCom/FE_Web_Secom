@@ -7,6 +7,7 @@ import { useAppSelector } from '../../redux/Store'
 import axios from 'axios'
 import User from './../user/user';
 import { UserInterface } from '../../interface/Interface'
+import { useRef } from 'react';
 
 
 const findFriend = () => {
@@ -15,6 +16,7 @@ const findFriend = () => {
   const [flag, setFlag] = useState(false)
 
   const [list, setList] = useState([])
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const userData: UserInterface = useAppSelector((state) => state.user.userInfo)
   const IP_BACKEND = 'https://se-com-be.onrender.com'
@@ -27,11 +29,11 @@ const findFriend = () => {
   const handleSubmitFindUser = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     await axios.post(`${IP_BACKEND}/getListUserByName`, {
-
       name: name,
     }).then((res) => {
-      const userIds = (userData.listFriend as { idUser: string }[]).map(user => user.idUser);
-      let data = res.data.data.filter((item: { idUser: string }) => {
+      const userIds = userData.listFriend.map(user => user.idUser);
+      console.log(userIds)
+      let data = res.data.data.filter((item) => {
         // bỏ đi item có idUser nằm trong listFriend
         return !userIds.includes(item.idUser);
       })
@@ -47,6 +49,9 @@ const findFriend = () => {
     //   if(!isLogin) {
     //     navigate('/welcome')
     //   }
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
 
   }, [])
 
@@ -63,7 +68,7 @@ const findFriend = () => {
     
         <>
           <div className="search-wrapper">
-            <input type="text" placeholder='Tìm kiếm...' value={name} onChange={(e) => {handleNameFriend(e)}} onKeyPress={(e) => {(e.key === 'Enter' ? handleSubmitFindUser(e) : null)}}/>
+            <input ref={inputRef} type="text" placeholder='Tìm kiếm...' value={name} onChange={(e) => {handleNameFriend(e)}} onKeyPress={(e) => {(e.key === 'Enter' ? handleSubmitFindUser(e) : null)}} />
             <FontAwesomeIcon className='search-icon' icon={faMagnifyingGlass} />
           </div>
 
