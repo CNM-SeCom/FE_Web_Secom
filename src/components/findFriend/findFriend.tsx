@@ -52,17 +52,14 @@ const findFriend = () => {
 
   return (
 
-<!--     <>
-      <div className="search-wrapper">
-        <input type="text" placeholder='Tìm kiếm...' value={name} onChange={(e) => { handleNameFriend(e) }} />
-        <button className='search-icon' onClick={(e) => handleSubmitFindUser(e)}>
-          <FontAwesomeIcon icon={faMagnifyingGlass} />
-        </button>
-      </div>
+      // <div className="search-wrapper">
+      //   <input type="text" placeholder='Tìm kiếm...' value={name} onChange={(e) => { handleNameFriend(e) }} />
+      //   <button className='search-icon' onClick={(e) => handleSubmitFindUser(e)}>
+      //     <FontAwesomeIcon icon={faMagnifyingGlass} />
+      //   </button>
+      // </div>
 
-      {flag && (list.map((item) => <User user={item} />))}
-
-    </> -->
+      // {flag && (list.map((item) => <User user={item} />))}
     
         <>
           <div className="search-wrapper">

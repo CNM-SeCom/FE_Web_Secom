@@ -15,9 +15,9 @@ enum NavItem {
   SETTING = 3,
   LOG_OUT = 4,
   FRIENDS = 5,
-<!--   FRIENDS = 3,
-  SETTING = 4,
-  LOG_OUT = 5, -->
+// <!--   FRIENDS = 3,
+//   SETTING = 4,
+//   LOG_OUT = 5, -->
 }
 
 const Navigation = () => {

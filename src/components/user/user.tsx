@@ -2,7 +2,6 @@ import './user.scss'
 import { FriendInterface, ReqAddFriendInterface, UserInterface } from '../../interface/Interface'
 import axios from 'axios'
 import { useAppSelector } from '../../redux/Store'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { setUser } from '../../redux/UserSlice';
@@ -18,6 +17,7 @@ const user = ({user} : Props) => {
   const fromUser: UserInterface = useAppSelector((state) => state.user.userInfo)
   const [flag, setFlag] = useState(true)
   const token  = useAppSelector((state) => state.token.accessToken)
+  const navigate = useNavigate()
 
   // console.log(token);
   
@@ -65,7 +65,7 @@ const user = ({user} : Props) => {
       }
       );
     }else{
-      axios.post('http://localhost:3000/cancelRequestAddFriend', data)
+      axios.post(`${IP_BACKEND}/cancelRequestAddFriend`, data)
       .then(() => {
         setFlag(true)
       })
@@ -81,7 +81,7 @@ const user = ({user} : Props) => {
     const body = {
       idUser: fromUser.idUser
     }
-    await axios.post('http://localhost:3000/reloadUser', body)
+    await axios.post(`${IP_BACKEND}/reloadUser`, body)
       .then((res) => {
         setUser(res.data.data)
         navigate("/friends")
@@ -103,7 +103,7 @@ const user = ({user} : Props) => {
       avatarToUser: user.avatar,
       nameToUser: user.name
     }
-    await axios.post('http://localhost:3000/checkExistRequestAddFriend', body)
+    await axios.post(`${IP_BACKEND}/checkExistRequestAddFriend`, body)
       .then((res) => {
         setFlag(res.data.success)
         console.log(res.data.success);
@@ -131,16 +131,16 @@ const user = ({user} : Props) => {
         className={`${flag? 'btnActive' : 'btn'}`} 
         onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}>{flag ? '+': '-'}</button>
     </div>
-<!-- 
-        <div className={'conversation-wrapper1'}>
-            <img src={user.avatar} alt='avatar-user' />
-            <h4>{user.name}</h4> 
-            <button 
-              className={`${flag? 'btnActive1' : 'btn1'}`} 
-              onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}
-              // onClick={() => checkExistRequestAddFriend()}
-              >{flag ? '+': '-'}</button>
-        </div> -->
+// <!-- 
+//         <div className={'conversation-wrapper1'}>
+//             <img src={user.avatar} alt='avatar-user' />
+//             <h4>{user.name}</h4> 
+//             <button 
+//               className={`${flag? 'btnActive1' : 'btn1'}`} 
+//               onClick={() => handleAddFriend(user.idUser, user.name, user.avatar)}
+//               // onClick={() => checkExistRequestAddFriend()}
+//               >{flag ? '+': '-'}</button>
+//         </div> -->
   )
 }
 export default user
