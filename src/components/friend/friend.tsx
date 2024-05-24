@@ -47,6 +47,7 @@ const friend = ({fr} : Props) => {
         reloadUser()
         //reload trang này
         window.location.reload()
+
         navigate("/friends")
       })
       .catch(() => {

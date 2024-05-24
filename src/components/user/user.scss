@@ -1,10 +1,12 @@
-.conversation-wrapper {
+.conversation-wrapper1 {
     width: 100%;
     display: flex;
     padding: 10px 20px;
     cursor: pointer;
-    border-left: 5px solid #ebedf0;
     align-items: center;
+    color: black;
+    background-color: white;
+    border-radius: 10px;
 
     &:hover {
         background-color: rgb(216, 216, 216);
@@ -21,11 +23,12 @@
         padding-left: 20px;
     }
 
-    .btnActive{
-        flex: 2; 
-    }
-    .btn{
+    .btnActive1{
         flex: 2;
+    }
+    .btn1{
+        flex: 2;
+        
         background-color: rgb(0, 126, 228);
     }
 

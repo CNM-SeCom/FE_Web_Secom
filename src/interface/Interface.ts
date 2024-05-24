@@ -44,6 +44,7 @@ export interface TokenInterface {
     accessToken: string,
     refreshToken: string,
 }
+
 export interface ReqAddFriendInterface {
     avatarFromUser: string,
     createdAt: string,

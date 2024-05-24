@@ -11,7 +11,6 @@ import ChangePassword from './components/forgotPassword/changePassword/ChangePas
 import FormEmail from './components/forgotPassword/formEmail/FormEmail'
 import FormPhone from './components/forgotPassword/formPhone/FormPhone'
 import Friends from './components/friends/friends';
-  
 
 function App() {
 
@@ -19,17 +18,21 @@ function App() {
     <Router>
       <Navigation />
       <Routes>
+        <Route path='/welcome' element={<Welcome />} />
         <Route path='/home' element={<Home />} />
         <Route path='/chat' element={<Chat />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/friends' element={<Friends />} />
         <Route path='/welcome' element={<Welcome />} />
+
         <Route path='/settingProfile' element={<SettingProfile/>} />
         <Route path='/change-password' element={<ChangePassword />} />
         <Route path='/form-email' element={<FormEmail />} />
         <Route path='/form-phone' element={<FormPhone />} />
         <Route path='/verify-otp' element={<VerifyOTP />} />
+        <Route path='/friends' element={<Friends />} />
         <Route path='*' element={<Navigate to="/welcome" />} />
+        
       </Routes>
     </Router>
   )
