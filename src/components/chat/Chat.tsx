@@ -25,13 +25,11 @@ const Chat = () => {
   const [openChat, setOpenChat] = useState(true)
 
   const [active, setActive] = useState<string>('')
-  const [listFriends, setListFriends] = useState<FriendInterface[]>([])
   const [chats, setChats] = useState<ChatInterface[]>([])
 
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const userId: string = useAppSelector((state) => state.user.userInfo.idUser)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
-  const stringeeToken = useAppSelector((state) => state.token.stringeeToken)
   let receiver: FriendInterface = useAppSelector((state) => state.currentChat.receiver)
 
   const currentTyping = useAppSelector((state) => state.currentChat.currentTyping)
@@ -45,7 +43,6 @@ const Chat = () => {
   const [groupName, setGroupName2] = useState('Nhóm của ' + user.name);
   
   const currentMessage: any[] = useAppSelector((state) => state.currentChat.messages)
-  const [tracking, setTracking] = useState(receiver)
   const IP_BACKEND = 'https://se-com-be.onrender.com'
   
  
@@ -74,8 +71,6 @@ const Chat = () => {
       }
     } else
       if (data.type === "text" || data.type === "video" || data.type === "image" || data.type === "file"||data.type==='video-call') {
-        console.log("ahiahidahsid")
-        console.log(data)
         getConversation()
         
         if (currentChatType==='single'&&receiver.idUser !== '' && receiver.idUser === data.user.idUser) { 

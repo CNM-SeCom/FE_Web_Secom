@@ -14,6 +14,7 @@ enum NavItem {
   PROFILE = 2,
   SETTING = 3,
   LOG_OUT = 4,
+  FRIENDS = 5,
 }
 
 const Navigation = () => {
@@ -21,7 +22,7 @@ const Navigation = () => {
   const [active, setActive] = useState<number>(NavItem.CHAT)
 
   const dispatch = useAppDispatch()
-  const token  = useAppSelector((state) => state.token.token)
+  const token  = useAppSelector((state) => state.token.accessToken)
   
   const user = useAppSelector((state) => state.user.userInfo)
 
@@ -31,7 +32,7 @@ const Navigation = () => {
   const handleLogout = async () => {
     const res = await axios.post(`${IP_BACKEND}/logout`, { idUser: user.idUser}, {headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token?.accessToken}` // Add null check for token
+      'Authorization': `Bearer ${token}` // Add null check for token
     }})
     // console.log(res)
 
@@ -65,6 +66,14 @@ const Navigation = () => {
       }}>
         <FontAwesomeIcon className='nav-icon' icon={faUser} />
         <p>Trang cá nhân</p>
+      </div>
+      <div className={`${active == NavItem.FRIENDS ? 'nav-item active' : 'nav-item'}`} onClick={() => {
+        navigate(`/friendS`)
+        console.log(NavItem.FRIENDS)
+        setActive(NavItem.FRIENDS)
+      }}>
+        <FontAwesomeIcon className='nav-icon' icon={faUser} />
+        <p>Bạn bè</p>
       </div>
       <div className='nav-item' onClick={handleLogout}>
         <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />

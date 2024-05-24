@@ -11,7 +11,7 @@ import { setNameUser, setAvatarUser, setCoverUser, setUser } from '../../redux/U
 const Setting = () => {
   const [avatar, setAvatar] = useState(null) 
   const [coverImage, setCoverImage] = useState(null) 
-  const [name, setName] = useState<string>('') 
+  const [name, setName] = useState('') 
   const navigate = useNavigate()
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
@@ -21,6 +21,7 @@ const Setting = () => {
   //Chuyển avatar: string thành blob
   const avatarBlob = new Blob([avatar], { type: 'text/plain' });
   const coverBlob = new Blob([coverImage], { type: 'text/plain' });
+  const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   //Update thông tin trong redux
   const updateNameRedux = () => {
@@ -60,7 +61,6 @@ const Setting = () => {
     formData.append('idUser', user.idUser); 
 
     console.log("FormData", formData.get('file'))
-    const IP_BACKEND = 'https://se-com-be.onrender.com'
 
     await axios.post(`${IP_BACKEND}/uploadAvatarWeb`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     .then(() => {
@@ -84,6 +84,7 @@ const Setting = () => {
 
     console.log("FormData", formData.get('file'))
 
+
     await axios.post(`${IP_BACKEND}/uploadCoverImageWeb`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
     .then(() => {
       console.log('Change cover image successfully')
@@ -97,7 +98,7 @@ const Setting = () => {
 
   const handleSubmitName = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-        await axios.post(`${IP_BACKEND}/getListUserByName`, {
+        await axios.post(`${IP_BACKEND}/changeProfile`, {
             name: name,
         }).then(() => {
             console.log('Change name successfully')
@@ -109,15 +110,9 @@ const Setting = () => {
   }    
 
 useEffect(() => {
-  if(!isLogin) {
-    navigate('/welcome')
-  }
-  if(state != null) {
-    setName(state.name)
-  }
-  else {
-    setName(user.name)
-  }
+  // if(!isLogin) {
+  //   navigate('/welcome')
+  // }
 }, [])
 
   return (

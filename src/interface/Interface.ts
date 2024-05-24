@@ -44,3 +44,27 @@ export interface TokenInterface {
     accessToken: string,
     refreshToken: string,
 }
+export interface ReqAddFriendInterface {
+    avatarFromUser: string,
+    createdAt: string,
+    fromUser: string,
+    id: string,
+    nameFromUser: string,
+    nameToUser: string,
+    status: string,
+    toUser: string,
+    type: string,
+}
+
+export interface SentAddFriendInterface {
+    avatarFromUser: string,
+    avatarToUser: string,
+    createdAt: string,
+    fromUser: string,
+    id: string,
+    nameFromUser: string,
+    nameToUser: string,
+    status: string,
+    toUser: string,
+    type: string,
+}

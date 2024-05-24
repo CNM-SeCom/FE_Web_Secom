@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../redux/Store';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { setUser } from '../../redux/UserSlice';
-import { setToken, setStringeeToken } from '../../redux/TokenSlice';
+import { setToken, setStringeeToken, setAccessToken } from '../../redux/TokenSlice';
 import { UserInterface } from '../../interface/Interface';
 import { setPhone } from '../../redux/PhoneSlice';
 
@@ -49,6 +49,7 @@ const Welcome = () => {
         }})
         .then((res) => {
             dispatch(setToken(res.data))
+            dispatch(setAccessToken(res.data.accessToken))
             if(user1 !== null) {
                 updateToken(res.data.refreshToken, idUser)
                 // console.log(111)
@@ -72,6 +73,7 @@ console.log("+++++++++++++++++++")
                 setUser1(res.data.user)
                 // console.log(user)
                 dispatch(setToken(res.data.token))
+                dispatch(setAccessToken(res.data.token.accessToken))
                 dispatch(changeLoginState(true))
                 // console.log(res.data.user)
                 setBlock1(Display.NONE)
