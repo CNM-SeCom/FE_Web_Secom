@@ -33,10 +33,8 @@ const findFriend = () => {
     }).then((res) => {
       const userIds = userData.listFriend.map(user => user.idUser);
       console.log(userIds)
-      let data = res.data.data.filter((item) => {
-        // bỏ đi item có idUser nằm trong listFriend
-        return !userIds.includes(item.idUser);
-      })
+      //bỏ đi chính mình
+      const data = res.data.data.filter((user: UserInterface) => user.idUser !== userData.idUser && !userIds.includes(user.idUser));
       setList(data)
       setFlag(true)
     })

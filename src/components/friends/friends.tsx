@@ -35,6 +35,7 @@ const friends = () => {
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
   const dispatch = useAppDispatch()
   useEffect(() => {
+    console.log("ahiihhi")
     getRequestAddFriendByUserId()
     getListFriendByUserId()
     getSentRequestAddFriendByUserId()

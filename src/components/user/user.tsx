@@ -16,7 +16,7 @@ interface Props {
 
 const user = ({user} : Props) => {
 
-  const fromUser: UserInterface = useAppSelector((state) => state.user.userInfo)
+  const fromUser: UserInterface =  useAppSelector((state) => state.user.userInfo)
   console.log(fromUser)
   const [flag, setFlag] = useState(true)
   const token  = useAppSelector((state) => state.token.accessToken)

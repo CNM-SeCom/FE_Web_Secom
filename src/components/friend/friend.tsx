@@ -1,7 +1,7 @@
 import './friend.scss'
 import { FriendInterface, ReqAddFriendInterface, UserInterface } from '../../interface/Interface'
 import axios from 'axios'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useAppSelector } from '../../redux/Store'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
@@ -18,6 +18,8 @@ const friend = ({fr} : Props) => {
   const fromUser: UserInterface = useAppSelector((state) => state.user.userInfo)
   const [flag, setFlag] = useState(true)
   const token = useSelector((state) => state.token.token);
+  const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch();
   // console.log(token);
 
   
@@ -48,19 +50,22 @@ const friend = ({fr} : Props) => {
   }
 
   const unFriend = async () => {
+    setLoading(true)
     const body = {
       idUser: fromUser.idUser,
       friendId: fr.idUser
     }
     await axios.post(`${IP_BACKEND}/unFriend`, body)
       .then((res) => {
+        setLoading(false)
         handleNotify(body.friendId, "")
-        setUser(res.data.data)
+        let listRequest = Array()
+        listRequest =  [...fromUser.listRequest]
+        console.log("hahaha", listRequest)
+        listRequest = [...fromUser.listRequest, res]
+        dispatch(setUser({...fromUser, listRequest: listRequest}))
         reloadUser()
-        //reload trang này
-        window.location.reload()
-
-        navigate("/friends")
+        
       })
       .catch(() => {
         console.log('Error')
@@ -83,7 +88,7 @@ const friend = ({fr} : Props) => {
             <button 
               className='btn1f'
               onClick={() => unFriend()}
-              >Xóa bạn</button>
+              >{loading?'Đang xóa':"Xóa bạn"}</button>
         </div>
   )
 }
