@@ -24,6 +24,7 @@ function formatTime(seconds) {
         remainingSeconds.toString().padStart(2, '0');
 }
 async function sendMessageCallVideo(text) {
+    console.log(text)
     const data = {
         listReceiver: [JSON.parse(receivedData).callerId, JSON.parse(receivedData).calleeId],
         message: {
@@ -167,6 +168,18 @@ jQuery(function () {
         setTimeout(() => {
             makeCall()
             notifyCallVideo()
+            //sau 30s nếu người dùng không trả lời thì cuộc gọi sẽ kết thúc
+            setTimeout(() => {
+                if (checkAnswer === false && checkCall === true) {
+                    // Kết thúc cuộc gọi
+                    currentCall.hangup(async function (res) {
+                        await sendMessageCallVideo("Cuộc gọi nhỡ") 
+                        console.log('+++ hangup: ', res);
+                        window.close()
+                    });
+                }
+               
+            }, 30000);
 
         }, 500);
     }
@@ -252,20 +265,19 @@ jQuery(function () {
 
     });
 
-    endCallButton.on('click', function () {
-        clearInterval(callTimer);
-        if (checkAnswer === false && checkCall === true) {
-            sendMessageCallVideo("Cuộc gọi nhỡ") 
-            console.log("cuộc gọi nhỡ")   
-        }
-        else if (checkCall === true) {
-            sendMessageCallVideo("Cuộc gọi video " + timer)
-        }
-
+    endCallButton.on('click',  function () {
         // alert(timer)
         remoteVideo.src = null
         if (currentCall != null) {
-            currentCall.hangup(function (res) {
+            currentCall.hangup(async function (res) {
+                if (checkAnswer === false && checkCall === true) {
+                    await sendMessageCallVideo("Cuộc gọi nhỡ") 
+                     console.log("cuộc gọi nhỡ")   
+                 }
+                 else if (checkCall === true && checkAnswer === true) {
+                     clearInterval(callTimer);
+                    await sendMessageCallVideo("Cuộc gọi video " + timer)
+                 }
                 console.log('+++ hangup: ', res);
                 currentCall = null
                 window.close()

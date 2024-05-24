@@ -11,11 +11,11 @@ import { setNameUser, setAvatarUser, setCoverUser, setUser } from '../../redux/U
 const Setting = () => {
   const [avatar, setAvatar] = useState(null) 
   const [coverImage, setCoverImage] = useState(null) 
-  const [name, setName] = useState('') 
+  
   const navigate = useNavigate()
   const isLogin: boolean = useAppSelector((state) => state.login.isLogin)
   const user: UserInterface = useAppSelector((state) => state.user.userInfo)
-  const { state } = useLocation()
+  const [name, setName] = useState(user.name)
   const dispatch = useDispatch();
 
   //Chuyển avatar: string thành blob
@@ -99,9 +99,11 @@ const Setting = () => {
   const handleSubmitName = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         await axios.post(`${IP_BACKEND}/changeProfile`, {
-            name: name,
+          idUser: user.idUser,  
+          name: name,
         }).then(() => {
             console.log('Change name successfully')
+            dispatch(setUser({...user, name: name}))
             navigate('/profile', { state: { name: name } })
         })
         .catch(() => {

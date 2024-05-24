@@ -38,7 +38,7 @@ const Message = ({ message, chatType }: Props) => {
   const IP_BACKEND = 'https://se-com-be.onrender.com'
 
   const getConversation = async () => {
-    await axios.post(`${IP_BACKEND}/getChatByUserId`, { idUser: user.idUser})
+    await axios.post(`${IP_BACKEND}/getChatByUserId`, { idUser: user.idUser })
       .then((res) => {
         //sort theo lastMessageTime
         res.data.data.sort((a: ChatInterface, b: ChatInterface) => {
@@ -57,8 +57,8 @@ const Message = ({ message, chatType }: Props) => {
         console.log('Error when get chat')
       })
   }
-  useEffect(()=>{getConversation()}, [])
-  
+  useEffect(() => { getConversation() }, [])
+
 
   // Hàm mở modal
   const showModal = (b) => {
@@ -166,9 +166,9 @@ const Message = ({ message, chatType }: Props) => {
         <a href={message.file} className='link-file'>{message.text}</a>
       </div>
       break;
-      case 'video-call':
-        messageContent = <div className="message-notify" style={{ color: 'green' }}>{message.text}</div>;
-        break;
+    case 'video-call':
+      messageContent = <div className="message-notify" style={{ color: 'green' }}>{message.text}</div>;
+      break;
     case 'KICKOUT_MEMBER':
       messageContent = <div className="message-notify" style={{ color: 'red' }}>{message.text}</div>;
       break;
@@ -191,19 +191,131 @@ const Message = ({ message, chatType }: Props) => {
       break;
   }
   const searchChat = (value) => {
-    if(value === ''){
+    if (value === '') {
       setChats(chats)
     }
-    else{
+    else {
       const search = chats.filter((chat) => {
         return chat.name.toLowerCase().includes(value.toLowerCase())
       })
       setChats(search)
     }
   }
-  const handleCheckboxChange = ()=>{
 
+  //tìm id được chọn
+  // const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const userId = event.target.value;
+  //   const isChecked = event.target.checked;
+
+  //   // Tìm người dùng tương ứng với checkbox được chọn
+  //   const sUser = listF.find(user => user.idUser === userId);
+  //   const selectedUser = {
+  //     idUser: sUser?.idUser,
+  //     name: sUser?.name,
+  //     avatar: sUser?.avatar,
+  //     role: 'member'
+  //   }
+
+  //   if (selectedUser) {
+  //     // Nếu checkbox được chọn
+  //     if (isChecked) {
+  //       // Thêm người dùng vào mảng selectedUsers
+  //       setSelectedUsers(prevState => [...prevState, selectedUser]);
+  //       // Tăng số lượng người dùng được chọn lên 1
+  //       setSelectedCount(prevCount => prevCount + 1);
+  //     } else {
+  //       // Nếu checkbox bị hủy chọn
+  //       // Lọc ra những người dùng không phải là người dùng đã được chọn
+  //       const updatedSelectedUsers = selectedUsers.filter(user => user.idUser !== userId);
+  //       setSelectedUsers(updatedSelectedUsers);
+  //       // Giảm số lượng người dùng được chọn đi 1
+  //       setSelectedCount(prevCount => prevCount - 1);
+  //     }
+  //   }
+  // };
+  //tìm chat được checkbox chọn 
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const chatId = event.target.value;
+    console.log("chatId")
+    console.log(listChat)
+    const isChecked = event.target.checked;
+    console.log("isChecked", isChecked)
+
+    // Tìm người dùng tương ứng với checkbox được chọn
+    const sChat = chats.find(chat => chat.id === chatId);
+    console.log("sChat", sChat)
+    if (sChat) {
+      // Nếu checkbox được chọn
+      if (isChecked) {
+        // Thêm người dùng vào mảng selectedUsers
+        setListChat(prevState => [...prevState, sChat]);
+      } else {
+        // Nếu checkbox bị hủy chọn
+        // Lọc ra những người dùng không phải là người dùng đã được chọn
+        const updatedSelectedChats = listChat.filter(chat => chat.id !== chatId);
+        setListChat(updatedSelectedChats);
+      }
+    }
+
+  };
+  const handleShareMessage = async () => {
+    listChat.forEach(async (chat) => {
+      console.log("chat", chat.type)
+      if (chat.type === 'single') {
+        const data = {
+          message: {
+            chatId: chat.id,
+            text: message.text,
+            type: message.type,
+            image: message.image ? message.image : null,
+            video: message.video ? message.video : null,
+            file: message.file ? message.file : null,
+            user: {
+              idUser: message.user.idUser.toString(),
+              name: message.user.name,
+              avatar: message.user.avatar
+            },
+            receiverId: chat.participants.filter((p) => p.idUser !== user.idUser)[0].idUser,
+            readStatus: false,
+          }
+        }
+        await axios.post(`${IP_BACKEND}/ws/send-message-to-user`, data)
+          .then(() => {
+            console.log('Send message successfully')
+          })
+          .catch(() => {
+            console.log('Error when send message')
+          })
+      }
+      else{
+        const data = {
+          listReceiver: chat.participants.filter((p) => p.idUser !== user.idUser),
+          message: {
+            chatId: chat.id,
+            text: message.text,
+            type: message.type,
+            image: message.image ? message.image : null,
+            video: message.video ? message.video : null,
+            file: message.file ? message.file : null,
+            user: {
+              idUser: message.user.idUser.toString(),
+              name: message.user.name,
+              avatar: message.user.avatar
+            },
+            readStatus: false,
+          }
+        }
+        await axios.post(`${IP_BACKEND}/ws/send-message-to-group/${chat.id}`, data)
+          .then(() => {
+            console.log('Send message successfully')
+          })
+          .catch(() => {
+            console.log('Error when send message')
+          })
+      }
+    })
   }
+  useEffect(() => { }, [listChat])
 
   return (
     <div>
@@ -231,7 +343,7 @@ const Message = ({ message, chatType }: Props) => {
         style={{ overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)' } }}
       >
         <div>
-          <div className="btn" onClick={handleForward} style={{ cursor: 'pointer' }}><FontAwesomeIcon icon={faShare} /> Chuyển tiếp</div>
+          <div className="btn" onClick={message.type !== 'video-call' ? handleForward : () => { }} style={{ cursor: message.type === 'video-call' ? 'not-allowed' : 'pointer' }}><FontAwesomeIcon icon={faShare} /> Chuyển tiếp</div>
           {loadingDelete ? <div className="btn" style={{ cursor: 'not-allowed' }}>Đang xóa...</div> : <div className="btn" onClick={handleDelete} style={{ cursor: checkMyMessage ? 'pointer' : 'not-allowed' }}><FontAwesomeIcon icon={faTrashAlt} /> Xóa</div>}
         </div>
         <button className='btnClose' onClick={() => setIsModalVisible(false)} style={{ backgroundColor: '#1CA1C1', margin: 'auto' }}>Đóng</button>
@@ -240,30 +352,53 @@ const Message = ({ message, chatType }: Props) => {
         isOpen={isModalShareVisible}
         onRequestClose={() => setIsModalShareVisible(false)}
         contentLabel="Chuyển tiếp tin nhắn"
-        className="modal-option"
+        className="modal-share"
         style={{ overlay: { backgroundColor: 'rgba(0, 0, 0, 0.5)' } }}
       >
         <input type="text" onChange={(e) => { searchChat(e.target.value) }} placeholder="Tìm bạn bè để thêm vào nhóm" style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid black', marginBottom: 10 }} />
-       <div style={{ overflowY: 'auto', height: 520 }}>
-            {chats.map((chat, index) => (
+        <div style={{ overflowY: 'auto', height: 520 }}>
+          {chats.map((chat, index) => {
+            let friend: FriendInterface = {
+              idUser: '',
+              name: '',
+              avatar: ''
+            }
+            if (chat.type === 'single') {
+              chat.participants.forEach((p) => {
+                if (p.idUser !== user.idUser) {
+                  friend.idUser = p.idUser
+                  friend.name = p.name
+                  friend.avatar = p.avatar
+                }
+              })
+            }
+            else {
+              friend.idUser = chat.id
+              friend.name = chat.groupName
+              friend.avatar = chat.avatar
+            }
+            return (
               <div key={index} style={{ width: '100%', padding: 10, borderRadius: 10, borderBottom: '1px  black', marginBottom: 10, display: 'flex', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex' }}>
-                  <img src={chat.avatar} alt="avatar-user" style={{ height: 40, width: 40, borderRadius: 50 }} />
+                  <img src={friend.avatar} alt="avatar-user" style={{ height: 40, width: 40, borderRadius: 50 }} />
                   <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <p style={{ marginLeft: 10, fontWeight: 'bold' }}>{chat.groupName}</p>
+                    <p style={{ marginLeft: 10, fontWeight: 'bold', color: 'black' }}>{friend.name}</p>
                   </div>
                 </div>
                 <div>
-                  <input type='checkbox' id={chat.id} name={chat.groupName} value={chat.id} className='checkBox' onChange={handleCheckboxChange} />
+                  <input type='checkbox' id={chat.id} name={friend.name} value={chat.id} className='checkBox' onChange={handleCheckboxChange} />
                 </div>
               </div>
-            ))
-            }
-          </div>
-       <div style={{display:'flex', justifyContent:'center'}}>
-       <button className='btnClose' onClick={() => setIsModalShareVisible(false)} style={{ backgroundColor: '#1CA1C1', margin: 10 }}>Đóng</button>
-       <button className='btnClose' onClick={() => setIsModalShareVisible(false)} style={{ backgroundColor: '#1CA1C1', margin: 10 }}>Gửi</button>
-       </div>
+            )
+          })}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button className='btnClose' onClick={() => setIsModalShareVisible(false)} style={{ backgroundColor: '#1CA1C1', margin: 10 }}>Đóng</button>
+          <button className='btnClose' onClick={() => {
+            handleShareMessage()
+            setIsModalShareVisible(false)
+          }} style={{ backgroundColor: '#1CA1C1', margin: 10 }}>Gửi</button>
+        </div>
       </Modal>
     </div>
 

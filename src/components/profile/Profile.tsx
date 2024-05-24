@@ -16,6 +16,9 @@ const Profile = () => {
       navigate('/welcome')
     }
   }, [])
+  useEffect(() => {
+
+  } , [user])
 
  
 
