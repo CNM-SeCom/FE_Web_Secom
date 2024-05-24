@@ -9,7 +9,11 @@ const FormPhone = () => {
     
     const navigate = useNavigate()
     const IP_BACKEND = 'https://se-com-be.onrender.com'
-
+    enum Display {
+        NONE = 'none',
+        BLOCK = 'block',
+    }
+    const [block, setBlock] = useState<Display>(Display.NONE)
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         
@@ -24,6 +28,7 @@ const FormPhone = () => {
             })
         })
         .catch(() => {
+            setBlock(Display.BLOCK)
             console.log('Error when find email by phone')
         })
 
@@ -32,10 +37,11 @@ const FormPhone = () => {
     return (
         <div className="form-phone">
         <div className="form">
-            <i>Hãy nhập số điện thoại của bạn</i>
+            <i  style={{color:'black'}}>Hãy nhập số điện thoại của bạn</i>
             <label>
-                <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <input  style={{color:'black'}} type="text" value={phone} onChange={(e) => setPhone(e.target.value)} />
             </label>
+            <p className='wrong-info-txt' style={{display: `${block}`}}>Không tìm thấy tài khoản tương ứng</p>
             <button type="button" className="submit" onClick={(e) => {handleSubmit(e)}}>Xác nhận</button>
         </div>
         </div>

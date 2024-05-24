@@ -34,7 +34,7 @@ const addFriend = ({add, sentI} : Props) => {
       name : name
     }
   
-    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, {data})
+    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, data)
     .then((response) => {
       console.log(response.data);
     })
@@ -96,7 +96,7 @@ const addFriend = ({add, sentI} : Props) => {
       console.log(data);
       axios.post(`${IP_BACKEND}/cancelRequestAddFriend`, data)
       .then(() => {
-        handleNotify(data.toUser, data.nameFromUser);
+        handleNotify(data.fromUser, data.nameFromUser);
         setLoading(false)
         let listRequest = Array()
         if(fromUser.listRequest == null){
@@ -155,7 +155,7 @@ const addFriend = ({add, sentI} : Props) => {
             <img src={add?add.avatarFromUser:sentI.avatarToUser} alt='avatar-user' />
             <h4>{add?add.nameFromUser:sentI.nameToUser}</h4> 
             <button 
-              className={`${flag? loading?'btnActiveaf' : 'btnaf':'btnaf'}`} 
+              className={`${flag?'btnActiveaf':'btnaf'}`} 
               disabled={loading}
               onClick={() => (acceptRequestAddFriend())}
               >
@@ -165,7 +165,9 @@ const addFriend = ({add, sentI} : Props) => {
               className='btnaf'
               onClick={() => {
                 axios.post(`${IP_BACKEND}/cancelRequestAddFriend`, add)
+
                 .then(() => {
+                  handleNotify(add.toUserUser, add.nameToUser);
                   navigate("/friends")
                 })
                 .catch((error) => {

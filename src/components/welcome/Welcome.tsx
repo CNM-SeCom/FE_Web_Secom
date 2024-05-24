@@ -27,9 +27,10 @@ const Welcome = () => {
     const [gender, setGender] = useState<string>('')
     const [name, setName] = useState<string>('')
     const [user1, setUser1] = useState<UserInterface>()
-    const [count, setCount] = useState<number>(0)
+    const [count, setCount] = useState<number>(1)
     const [email, setEmail] = useState<string>('')
-
+    const [checkEmail, setCheckEmail] = useState<boolean>(true)
+    const [checkPhone, setCheckPhone] = useState<boolean>(true) 
     const toggleSignUp = () => {
         setIsSignUp(!isSignUp);
     }
@@ -51,7 +52,7 @@ const Welcome = () => {
             dispatch(setToken(res.data))
             dispatch(setAccessToken(res.data.accessToken))
             if(user1 !== null) {
-                updateToken(res.data.refreshToken, idUser)
+                // updateToken(res.data.refreshToken, idUser)
                 // console.log(111)
             }
         })
@@ -60,8 +61,6 @@ const Welcome = () => {
 
     const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-console.log("+++++++++++++++++++")
- console.log(IP_BACKEND)
         if(count < 3) {
             await axios.post(`${IP_BACKEND}/login`, {
                     phone: phone1,
@@ -86,7 +85,7 @@ console.log("+++++++++++++++++++")
                 })
                 navigate('/chat')
                 // console.log(res.data.token.refreshToken, '-', res.data.user.idUser)
-                updateToken(res.data.token.refreshToken, res.data.user.idUser)
+                // updateToken(res.data.token.refreshToken, res.data.user.idUser)
             })
             .catch(() => {
                 dispatch(setPhone(phone1))
@@ -104,6 +103,7 @@ console.log("+++++++++++++++++++")
                 navigate('/form-email', { state: { email: res.data.data, phone: phone1, } })
             })
             .catch(() => {
+                navigate('/form-email')
                 console.log('Error when find email by phone')
             })
         }
@@ -112,52 +112,58 @@ console.log("+++++++++++++++++++")
     const handleSignup = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
 
-        await axios.post(`${IP_BACKEND}/checkPhoneExist`, { phone: phone2 })
-        .then(async () => {
-            if(password2 != password3) {
-                setBlock2(Display.BLOCK)
-            }
-            else {
-                await axios.post(`${IP_BACKEND}/sendOTP`, {
-                    email: email,
-                })
-                .then(() => {
-                    navigate('/verify-otp', { state: { 
-                        phone: phone2,
-                        name: name,
-                        gender: gender,
-                        pass: password2,
+       if(!checkEmail||!checkPhone||name === '' || email === '' || phone2 === '' || password2 === '' || password3 === '') {
+            alert('Vui lòng điền đầy đủ thông tin!')
+        }
+        else {
+            await axios.post(`${IP_BACKEND}/checkPhoneExist`, { phone: phone2 })
+            .then(async () => {
+                if(password2 != password3) {
+                    setBlock2(Display.BLOCK)
+                }
+                else {
+                    await axios.post(`${IP_BACKEND}/sendOTP`, {
                         email: email,
-                        dob: '', 
-                        flag: 1,
-                    }})
-                })
-                .catch(() => {
-                    console.log('Error when send OTP')
-                })
-            }
-        })
-        .catch(() => {
-            setBlock3(Display.BLOCK)
-            console.log(666)
-        })
-
+                    })
+                    .then(() => {
+                        navigate('/verify-otp', { state: { 
+                            phone: phone2,
+                            name: name,
+                            gender: gender,
+                            pass: password2,
+                            email: email,
+                            dob: '', 
+                            flag: 1,
+                        }})
+                    })
+                    .catch(() => {
+                        console.log('Error when send OTP')
+                    })
+                }
+            })
+            .catch(() => {
+                setBlock3(Display.BLOCK)
+                console.log(666)
+            })
+    
+        }
+      
     }
 
     return (
         <div className={`cont ${isSignUp ? 's--signup' : ''}`}>
             <div className="form sign-in">
-                <h2>Welcome</h2>
+                <h2 style={{color:'black'}}>Welcome</h2>
                 <label>
-                    <span>Số điện thoại</span>
-                    <input type="text" value={phone1} onChange={(e) => setPhone1(e.target.value)} />
+                    <span style={{color:'black'}}>Số điện thoại</span>
+                    <input style={{color:'black'}} type="text" value={phone1} onChange={(e) => setPhone1(e.target.value)} />
                 </label>
                 <label>
-                    <span>Mật khẩu</span>
-                    <input type="password" value={password1} onChange={(e) => setPassword1(e.target.value)} onKeyPress={(e) => {(e.key === 'Enter' ? handleLogin(e) : null)}} />
+                    <span style={{color:'black'}}>Mật khẩu</span>
+                    <input style={{color:'black'}} type="password" value={password1} onChange={(e) => setPassword1(e.target.value)} onKeyPress={(e) => {(e.key === 'Enter' ? handleLogin(e) : null)}} />
                 </label>
                 <div className="wrong-info-wrapper">
-                    <p className='wrong-info-txt' style={{display: `${block1}`}}>Vui lòng nhập đúng thông tin!</p>
+                    <p className='wrong-info-txt' style={{display: `${block1}`}}>Thông tin đăng nhập không chính xác, bạn còn {4-count} lần thử</p>
                     <p className="forgot-pass" onClick={() => navigate('/form-phone')}>Quên mật khẩu?</p>
                 </div>
                 <button type="button" className="submit" onClick={(e) => handleLogin(e)}>Đăng nhập</button>
@@ -176,18 +182,39 @@ console.log("+++++++++++++++++++")
                     </div>
                 </div>
                 <div className="form sign-up">
-                    <h2>Tạo tài khoản mới</h2>
+                    <h2  style={{color:'black'}}>Tạo tài khoản mới</h2>
                     <label>
                         <span>Tên</span>
                         <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
                     </label>
                     <label>
                         <span>Email</span>
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <input type="email" value={email} onChange={(e) => {
+                            //regex email
+                            const re = /\S+@\S+\.\S+/;
+                            if(re.test(e.target.value)) {
+                                setCheckEmail(true)
+                            }
+                            else {
+                                setCheckEmail(false)
+                            }
+                            setEmail(e.target.value)}} placeholder='abc@xyz.com'/>
+                        <span style={{display: `${checkEmail ? 'none' : 'block'}`, color:"red"}}>Nhập đúng định dạng email</span>
                     </label>
                     <label>
                         <span>Số điện thoại</span>
-                        <input type="text" value={phone2} onChange={(e) => setPhone2(e.target.value)} />
+                        <input type="text" value={phone2} onChange={(e) =>{
+                            //regex phone có 10 số
+                            const re = /^[0-9]{10}$/;
+                            if(re.test(e.target.value)) {
+                                setCheckPhone(true)
+                            }
+                            else {
+                                setCheckPhone(false)
+                            }
+
+                            setPhone2(e.target.value)}} placeholder='0123456789'/>
+                        <span style={{display: `${checkPhone ? 'none' : 'block'}`, color:"red"}}>Nhập đúng định dạng số điện thoại</span>
                     </label>
                     <label>
                         <span>Mật khẩu</span>

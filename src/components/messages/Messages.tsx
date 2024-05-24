@@ -805,9 +805,6 @@ const Messages = () => {
           <h4 className='name-user'>{currentChatType==="group" ? name : receiver.name }</h4>
         </div>
         <div className="mh-right">
-          <button className='btnCall'>
-            <FontAwesomeIcon icon={faPhone} />
-          </button>
           <button className='btnCall' onClick={handleCallVideo}>
             <FontAwesomeIcon icon={faVideo} />
           </button>

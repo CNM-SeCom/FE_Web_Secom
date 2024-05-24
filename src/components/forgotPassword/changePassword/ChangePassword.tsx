@@ -37,14 +37,14 @@ const ChangePassword = () => {
     return (
         <div className="forgot-password-wrapper">
             <div className="form">
-                <h2>Quên mật khẩu</h2>
+                <h2  style={{color:'black'}}>Quên mật khẩu</h2>
                 <label>
-                    <span>Mật khẩu mới</span>
-                    <input type="password" value={password} onChange={(e) => { setPassword(e.target.value) }} />
+                    <span style={{color:'black'}}>Mật khẩu mới</span>
+                    <input style={{color:'black'}} type="password" value={password} onChange={(e) => { setPassword(e.target.value) }} />
                 </label>
                 <label>
-                    <span>Nhập lại mật khẩu mới</span>
-                    <input type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value) }} />
+                    <span style={{color:'black'}}>Nhập lại mật khẩu mới</span>
+                    <input style={{color:'black'}} type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value) }} />
                 </label>
                 <p className='wrong-info-txt' style={{display: `${flag ? 'block' : 'none'}`}}>Vui lòng nhập đúng thông tin!</p>
                 <button type="button" className="submit" onClick={(e) => handleSubmit(e)}>Xác nhận</button>

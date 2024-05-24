@@ -93,11 +93,11 @@ const VerifyOTP = () => {
     return (
         <div className='verifyOTP-wrapper'>
             <div className="form">
-                <h2>Xác nhận OTP</h2>
-                <i>Hãy nhập mã OTP đã được gửi tới email của bạn</i>
+                <h2 style={{color:'black'}}>Xác nhận OTP</h2>
+                <i style={{color:'black'}}>Hãy nhập mã OTP đã được gửi tới email của bạn</i>
                 <label>
-                    <span>OTP</span>
-                    <input type="number" value={otp} onChange={(e) => setOtp(e.target.value)} />
+                    <span style={{color:'black'}}>OTP</span>
+                    <input style={{color:'black'}} type="number" value={otp} onChange={(e) => setOtp(e.target.value)} />
                 </label>
                 <p className='wrong-info-txt' style={{display: `${block}`}}>Sai OTP</p>
                 <button type="button" className="submit" onClick={(e) => handleVerifyOTP(e)}>Xác nhận</button>

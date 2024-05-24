@@ -35,9 +35,9 @@ const user = ({user} : Props) => {
       receiverId: receiverId,
       name : name
     }
-  
-    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, {data})
+    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, data)
     .then((response) => {
+      console.log("notify")
       console.log(response.data);
     })
   }

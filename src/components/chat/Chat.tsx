@@ -79,11 +79,9 @@ const Chat = () => {
   socket.addEventListener('message', async function (event) {
     
     const data:any = JSON.parse(event.data)
-    if(data.type==='ADD_FRIEND'){
-      reloadUser()
-    }
+   
 
-    else  if (data.type === "RELOAD_MESSAGE") {
+    if (data.type === "RELOAD_MESSAGE") {
       if (data.chatId === currentChatId) {
         getMessage()
       }
@@ -165,6 +163,9 @@ const Chat = () => {
         localStorage.setItem('myName', data.name)
         localStorage.setItem('dataCall', JSON.stringify(dataCall))
         window.open('/src/components/call/Call.html', '_blank')
+      }
+      else if(data.type==='ADD_FRIEND'){
+        reloadUser()
       }
   });
   },[currentMessage])

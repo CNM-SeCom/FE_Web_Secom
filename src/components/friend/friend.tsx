@@ -35,6 +35,17 @@ const friend = ({fr} : Props) => {
         console.log('Error')
       })
   }
+  const handleNotify = (receiverId:string, name:string) => {
+    const data = {
+      receiverId: receiverId,
+      name : name
+    }
+    axios.post(`${IP_BACKEND}/ws/sendNotifyAddFriendToUser`, data)
+    .then((response) => {
+      console.log("notify")
+      console.log(response.data);
+    })
+  }
 
   const unFriend = async () => {
     const body = {
@@ -43,6 +54,7 @@ const friend = ({fr} : Props) => {
     }
     await axios.post(`${IP_BACKEND}/unFriend`, body)
       .then((res) => {
+        handleNotify(body.friendId, "")
         setUser(res.data.data)
         reloadUser()
         //reload trang này

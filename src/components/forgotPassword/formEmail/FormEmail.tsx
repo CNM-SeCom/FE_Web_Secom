@@ -35,9 +35,9 @@ const FormEmail = () => {
   return (
     <div className='form-email'>
       <div className="form">
-          <i>Hãy nhập email của bạn</i>
+          <i  style={{color:'black'}}>Hãy nhập email của bạn</i>
           <label>
-              <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input style={{color:'black'}} type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
           </label>
           <button type="button" className="submit" onClick={(e) => {handleSubmit(e)}}>Xác nhận</button>
       </div>
