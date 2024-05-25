@@ -159,7 +159,7 @@ const addFriend = ({add, sentI} : Props) => {
               disabled={loading}
               onClick={() => (acceptRequestAddFriend())}
               >
-              {flag ? loading?'Đang chấp nhận':'Chấp nhận': loading?'Đang từ chối':'Từ chối'}
+              {flag ? loading?'Đang chấp nhận':'Chấp nhận': loading?'Đang hủy':'Thu hồi'}
               </button>
               {flag ? <button
               className='btnaf'

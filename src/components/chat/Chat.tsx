@@ -377,7 +377,7 @@ const Chat = () => {
 
         <div style={{ display: 'flex' }}>
           <img src="https://res.cloudinary.com/dekjrisqs/image/upload/v1712977627/vljmvybzv0orkqwej1tf.png" alt='avatar-user' style={{ height: 50, width: 50, borderRadius: 50 }} />
-          <input type='text' placeholder='Tên nhóm' required style={{
+          <input type='text' placeholder='Tên nhóm' value={groupName} required style={{
             textAlign: 'left', 
 
           }} onChange={(e) => setGroupName2(e.target.value)} />
